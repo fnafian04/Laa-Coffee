@@ -58,6 +58,8 @@ CREATE TABLE IF NOT EXISTS order_items (
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
   quantity INT NOT NULL CHECK (quantity > 0),
   price DECIMAL(10, 2) NOT NULL,
+  temperature VARCHAR(50), -- panas/dingin
+  custom_notes TEXT, -- catatan khusus kasir/dapur
   subtotal DECIMAL(10, 2) NOT NULL GENERATED ALWAYS AS (quantity * price) STORED,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

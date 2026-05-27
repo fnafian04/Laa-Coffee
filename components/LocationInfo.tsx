@@ -4,55 +4,49 @@ interface LocationInfoProps {
   address: string;
   phone: string;
   operatingHours: string;
-  mapUrl: string;
 }
 
-export default function LocationInfo({ address, phone, operatingHours, mapUrl }: LocationInfoProps) {
+export default function LocationInfo({ address, phone, operatingHours }: LocationInfoProps) {
   return (
-    <div className="space-y-8">
-      {/* Google Maps */}
-      <div className="rounded-2xl overflow-hidden shadow-lg border-4 border-green-200">
-        <div className="relative w-full h-96">
-          <iframe width="100%" height="100%" style={{ border: 0 }} loading="lazy" allowFullScreen referrerPolicy="no-referrer-when-downgrade" src={mapUrl} className="w-full h-full" />
-        </div>
-        <div className="p-4 bg-green-50">
-          <a href="https://maps.app.goo.gl/9QhN5rtWNVWj2ygr9" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-semibold text-sm inline-flex items-center gap-2">
-            📍 Open in Maps
-          </a>
-        </div>
-      </div>
+    <div className="space-y-6">
+      {/* Address & Contact detail card */}
+      <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/5 p-6 md:p-8 border border-amber-100/50 space-y-6">
+        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-100 px-3 py-1 rounded-full uppercase tracking-wider select-none">
+          Kontak Resmi
+        </span>
+        <h3 className="text-xl md:text-2xl font-extrabold text-amber-950 mt-4 mb-2">Rincian Lokasi</h3>
 
-      {/* Address & Contact */}
-      <div className="space-y-6">
-        <h3 className="text-2xl font-bold text-amber-900 mb-6">Rincian Lokasi & Kontak</h3>
-
-        {/* Address */}
-        <div className="flex gap-4">
-          <span className="text-3xl">📍</span>
-          <div>
-            <h4 className="font-bold text-amber-900 mb-2">Alamat:</h4>
-            <p className="text-gray-700">{address}</p>
+        <div className="space-y-4">
+          {/* Address */}
+          <div className="flex gap-3">
+            <span className="text-2xl p-2 bg-amber-50 rounded-xl h-fit">📍</span>
+            <div>
+              <h4 className="font-bold text-amber-950 text-xs md:text-sm mb-0.5">Alamat Kedai:</h4>
+              <p className="text-xs md:text-sm text-gray-600 leading-relaxed">{address}</p>
+            </div>
           </div>
-        </div>
 
-        {/* Phone */}
-        <div className="flex gap-4">
-          <span className="text-3xl">📞</span>
-          <div>
-            <h4 className="font-bold text-amber-900 mb-2">No. Telepon:</h4>
-            <p className="text-gray-700">{phone}</p>
+          {/* Phone */}
+          <div className="flex gap-3">
+            <span className="text-2xl p-2 bg-amber-50 rounded-xl h-fit">📞</span>
+            <div>
+              <h4 className="font-bold text-amber-950 text-xs md:text-sm mb-0.5">No. Telepon WhatsApp:</h4>
+              <p className="text-xs md:text-sm text-gray-600">{phone}</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Operating Hours */}
-      <div className="bg-amber-50 p-6 rounded-xl border-2 border-amber-200">
-        <div className="flex gap-4">
-          <span className="text-3xl">⏰</span>
+      {/* Operating Hours card */}
+      <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/5 p-6 md:p-8 border border-amber-100/50">
+        <div className="flex gap-3">
+          <span className="text-2xl p-2 bg-amber-50 rounded-xl h-fit">⏰</span>
           <div className="flex-1">
-            <h4 className="font-bold text-amber-900 mb-3">Jam Operasional</h4>
-            <p className="text-amber-800 font-semibold mb-2">{operatingHours}</p>
-            <p className="text-sm text-gray-700">Waktu paling tenang untuk berkunjung (tidak terlalu ramai) adalah pada pagi atau larut malam, sedangkan kafe biasanya cukup sibuk pada sore hingga malam hari.</p>
+            <h4 className="font-bold text-amber-950 text-sm mb-2">Jam Operasional Harian</h4>
+            <p className="text-xs md:text-sm text-amber-900 font-extrabold mb-2">{operatingHours}</p>
+            <p className="text-[11px] md:text-xs text-gray-500 leading-relaxed">
+              * Tips: Waktu terbaik nugas dengan tenang adalah pagi pukul 08:00 - 11:30 atau larut malam. Kafe biasanya cukup ramai pada jam bersantai sore pukul 16:00 - 20:00 WIB.
+            </p>
           </div>
         </div>
       </div>

@@ -5,8 +5,8 @@ interface CartSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   cartItems: CartItemType[];
-  onQuantityChange: (productId: string, newQuantity: number) => void;
-  onRemove: (productId: string) => void;
+  onQuantityChange: (cartItemId: string, newQuantity: number) => void;
+  onRemove: (cartItemId: string) => void;
   onCheckout: () => void;
 }
 
@@ -47,7 +47,7 @@ export default function CartSidebar({ isOpen, onClose, cartItems, onQuantityChan
               <p className="text-gray-500 italic">Keranjang kosong, silakan tambah produk.</p>
             </div>
           ) : (
-            cartItems.map((item) => <CartItem key={item.product_id} item={item} onQuantityChange={onQuantityChange} onRemove={onRemove} />)
+            cartItems.map((item) => <CartItem key={item.id} item={item} onQuantityChange={onQuantityChange} onRemove={onRemove} />)
           )}
         </div>
 
@@ -90,7 +90,7 @@ export default function CartSidebar({ isOpen, onClose, cartItems, onQuantityChan
               <p className="text-gray-500 text-sm italic">Keranjang kosong</p>
             </div>
           ) : (
-            cartItems.map((item) => <CartItem key={item.product_id} item={item} onQuantityChange={onQuantityChange} onRemove={onRemove} />)
+            cartItems.map((item) => <CartItem key={item.id} item={item} onQuantityChange={onQuantityChange} onRemove={onRemove} />)
           )}
         </div>
 

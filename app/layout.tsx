@@ -1,20 +1,36 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-plus-jakarta",
+});
 
 export const metadata: Metadata = {
   title: "Laa Coffee - Order at Table",
   description: "Aplikasi pemesanan meja interaktif untuk Laa Coffee kedai kopi berkualitas",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id">
+    <html lang="id" className={`${plusJakartaSans.variable}`}>
       <head>
         <meta charSet="utf-8" />
         <link rel="icon" href="☕" />
       </head>
-      <body>{children}</body>
+      <body className="antialiased">
+        <div className="pb-20 md:pb-0">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

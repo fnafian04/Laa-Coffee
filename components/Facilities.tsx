@@ -3,37 +3,33 @@ import React from "react";
 interface FacilitiesProps {
   amenities: string;
   atmosphere: string;
-  specialMenu: string;
 }
 
-export default function Facilities({ amenities, atmosphere, specialMenu }: FacilitiesProps) {
+export default function Facilities({ amenities, atmosphere }: FacilitiesProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-8">
-      <h3 className="text-2xl font-bold text-amber-900 mb-8">Fasilitas & Suasana</h3>
+    <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/5 p-6 md:p-8 border border-amber-100/50">
+      <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-100 px-3 py-1 rounded-full uppercase tracking-wider select-none">
+        Kenyamanan Kafe
+      </span>
+      <h3 className="text-xl md:text-2xl font-extrabold text-amber-950 mt-4 mb-6">Fasilitas & Suasana</h3>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Atmosphere */}
-        <div>
-          <h4 className="font-bold text-lg text-amber-900 mb-3 flex items-center gap-2">
-            <span>☕</span> Suasana:
-          </h4>
-          <p className="text-gray-700 leading-relaxed">{atmosphere}</p>
+        <div className="flex gap-3">
+          <span className="text-2xl p-2 bg-amber-50 rounded-xl h-fit">☕</span>
+          <div>
+            <h4 className="font-bold text-amber-950 text-sm md:text-base mb-1">Suasana Kedai:</h4>
+            <p className="text-xs md:text-sm text-gray-600 leading-relaxed">{atmosphere}</p>
+          </div>
         </div>
 
         {/* Amenities */}
-        <div>
-          <h4 className="font-bold text-lg text-amber-900 mb-3 flex items-center gap-2">
-            <span>🏠</span> Fasilitas:
-          </h4>
-          <p className="text-gray-700 leading-relaxed">{amenities}</p>
-        </div>
-
-        {/* Special Menu */}
-        <div className="bg-amber-50 p-4 rounded-lg border-l-4 border-amber-600">
-          <h4 className="font-bold text-lg text-amber-900 mb-3 flex items-center gap-2">
-            <span>📋</span> Menu Andalan:
-          </h4>
-          <p className="text-gray-700 leading-relaxed">{specialMenu}</p>
+        <div className="flex gap-3">
+          <span className="text-2xl p-2 bg-amber-50 rounded-xl h-fit">🏠</span>
+          <div>
+            <h4 className="font-bold text-amber-950 text-sm md:text-base mb-1">Fasilitas Penunjang:</h4>
+            <p className="text-xs md:text-sm text-gray-600 leading-relaxed">{amenities}</p>
+          </div>
         </div>
       </div>
     </div>

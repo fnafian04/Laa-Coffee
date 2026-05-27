@@ -11,7 +11,8 @@ html {
 }
 
 body {
-  @apply bg-amber-50 text-gray-900;
+  font-family: var(--font-plus-jakarta), sans-serif;
+  @apply bg-amber-50/30 text-gray-900;
 }
 
 /* Custom scrollbar */
@@ -29,4 +30,13 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-amber-700;
+}
+
+/* Hide scrollbar for clean mobile navigation horizontal scroll */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

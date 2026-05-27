@@ -24,13 +24,15 @@ export default function MenuSection({ categories, selectedCategory, onCategoryCh
         </div>
 
         {/* Category Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8">
+        <div className="flex overflow-x-auto md:flex-wrap md:justify-center gap-2.5 pb-4 px-4 -mx-4 md:px-0 md:mx-0 md:pb-0 mb-6 scrollbar-hide scroll-smooth">
           {categories.map((category) => (
             <button
               key={category.id}
               onClick={() => onCategoryChange(category.id)}
-              className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold transition-all duration-200 text-sm md:text-base ${
-                selectedCategory === category.id ? "bg-amber-800 text-white shadow-lg" : "bg-white text-amber-900 hover:bg-amber-100 shadow"
+              className={`px-5 py-2.5 rounded-full font-bold transition-all duration-200 text-xs md:text-sm whitespace-nowrap flex items-center gap-1.5 active:scale-95 ${
+                selectedCategory === category.id 
+                  ? "bg-amber-800 text-white shadow-md shadow-amber-900/10 scale-105" 
+                  : "bg-white text-amber-900 hover:bg-amber-50 shadow-sm border border-amber-100"
               }`}
             >
               <span>{category.icon && `${category.icon} `}</span>

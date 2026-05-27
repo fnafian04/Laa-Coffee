@@ -54,6 +54,8 @@ export interface OrderItem {
   product_id: string;
   quantity: number;
   price: number;
+  temperature?: "hot" | "cold";
+  custom_notes?: string;
   subtotal: number;
   created_at: string;
   updated_at: string;
@@ -70,6 +72,8 @@ export interface CartItem {
   price: number;
   image_url: string;
   quantity: number;
+  temperature?: "hot" | "cold";
+  customNotes?: string;
 }
 
 export interface OrderWithItems extends Order {

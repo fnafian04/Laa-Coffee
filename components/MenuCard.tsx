@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 export interface Product {
   id: string;
@@ -7,27 +7,16 @@ export interface Product {
   price: number;
   image_url: string;
   is_available: boolean;
+  category_id?: string;
+  category_name?: string;
 }
 
 interface MenuCardProps {
   product: Product;
-  onAddToCart: (product: Product, quantity: number) => void;
+  onSelect: (product: Product) => void;
 }
 
-export default function MenuCard({ product, onAddToCart }: MenuCardProps) {
-  const [quantity, setQuantity] = useState(1);
-
-  const handleAdd = () => {
-    onAddToCart(product, quantity);
-    setQuantity(1); // Reset quantity setelah ditambahkan
-  };
-
-  const handleQuantityChange = (value: number) => {
-    if (value >= 1) {
-      setQuantity(value);
-    }
-  };
-
+export default function MenuCard({ product, onSelect }: MenuCardProps) {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -37,42 +26,66 @@ export default function MenuCard({ product, onAddToCart }: MenuCardProps) {
     }).format(price);
   };
 
+  const handleSelect = () => {
+    if (product.is_available) {
+      onSelect(product);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-200 flex flex-col h-full">
+    <div 
+      onClick={handleSelect}
+      className={`bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:border-amber-400 transition-all duration-300 flex flex-col h-full border border-amber-100/70 ${
+        product.is_available 
+          ? "cursor-pointer transform hover:-translate-y-1" 
+          : "opacity-85 cursor-not-allowed"
+      }`}
+    >
       {/* Product Image */}
-      <div className="relative w-full h-40 md:h-48 bg-gray-200 overflow-hidden">
-        <img src={product.image_url} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
+      <div className="relative w-full h-32 sm:h-40 md:h-48 bg-amber-50/50 overflow-hidden">
+        <img 
+          src={product.image_url} 
+          alt={product.name} 
+          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+        />
         {!product.is_available && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">Tidak Tersedia</span>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] flex items-center justify-center">
+            <span className="text-white font-bold text-[10px] sm:text-xs bg-red-650 px-2.5 py-1 rounded-full shadow-md">
+              Habis
+            </span>
           </div>
         )}
       </div>
 
       {/* Product Info */}
-      <div className="flex-1 flex flex-col p-3 md:p-4">
-        <h3 className="text-base md:text-lg font-bold text-amber-900 mb-1">{product.name}</h3>
-        <p className="text-xs md:text-sm text-gray-600 mb-3 flex-1 line-clamp-2">{product.description}</p>
-        <p className="text-sm md:text-base font-bold text-amber-800 mb-3">{formatPrice(product.price)}</p>
-
-        {/* Quantity & Add Button */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center border border-amber-300 rounded-lg bg-amber-50">
-            <button onClick={() => handleQuantityChange(quantity - 1)} disabled={quantity <= 1} className="px-2 py-1 text-amber-800 hover:bg-amber-100 disabled:opacity-50">
-              −
-            </button>
-            <input type="number" value={quantity} onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)} className="w-10 text-center bg-transparent text-amber-900 font-semibold focus:outline-none" min="1" />
-            <button onClick={() => handleQuantityChange(quantity + 1)} className="px-2 py-1 text-amber-800 hover:bg-amber-100">
-              +
-            </button>
-          </div>
-
+      <div className="flex-1 flex flex-col p-3 sm:p-4">
+        <h3 className="text-xs sm:text-sm md:text-base font-extrabold text-amber-950 mb-1 line-clamp-1">
+          {product.name}
+        </h3>
+        
+        <p className="text-[10px] sm:text-xs text-gray-500 mb-3 sm:mb-4 flex-1 line-clamp-2 leading-relaxed">
+          {product.description}
+        </p>
+        
+        {/* Footer Info & Add Button */}
+        <div className="flex items-center justify-between mt-auto pt-2 border-t border-amber-50">
+          <p className="text-xs sm:text-sm md:text-base font-black text-amber-900">
+            {formatPrice(product.price)}
+          </p>
+          
           <button
-            onClick={handleAdd}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSelect();
+            }}
             disabled={!product.is_available}
-            className={`flex-1 py-2 px-3 rounded-lg font-semibold text-white text-sm md:text-base transition-all ${product.is_available ? "bg-amber-700 hover:bg-amber-800 cursor-pointer" : "bg-gray-400 cursor-not-allowed"}`}
+            className={`py-1 px-2.5 sm:py-1.5 sm:px-4 rounded-lg font-extrabold text-[10px] sm:text-xs md:text-sm transition-all active:scale-95 shadow-sm ${
+              product.is_available 
+                ? "bg-amber-800 hover:bg-amber-900 text-white cursor-pointer" 
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }`}
           >
-            <span className="mr-1">+</span> Tambah
+            + Beli
           </button>
         </div>
       </div>
