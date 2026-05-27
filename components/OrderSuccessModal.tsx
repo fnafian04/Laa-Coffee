@@ -117,7 +117,7 @@ export default function OrderSuccessModal({ isOpen, orderNumber, customerName, t
             onClick={onClose}
             className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg"
           >
-            ← Kembali ke Menu
+            Kembali ke Menu
           </button>
         </div>
       </div>

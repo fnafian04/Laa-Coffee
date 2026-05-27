@@ -126,7 +126,7 @@ export default function AdminLoginPage() {
         {/* Back Link */}
         <div className="text-center pt-2">
           <Link href="/" className="text-xs text-amber-800 font-bold hover:text-amber-950 hover:underline">
-            ← Kembali ke Beranda Utama
+            Kembali ke Beranda Utama
           </Link>
         </div>
       </div>

@@ -304,12 +304,21 @@ export default function MenuPage() {
             <p>
               Developed by{" "}
               <a 
-                href="https://instagram.com/nafiandeva" 
+                href="https://www.linkedin.com/in/haii-akunafiann/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-amber-400 hover:text-white transition-colors font-semibold"
               >
-                Nafi & Eva
+                Nafi
+              </a>
+              {" "}&{" "}
+              <a 
+                href="https://www.linkedin.com/in/eva-ristiyanti/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-amber-400 hover:text-white transition-colors font-semibold"
+              >
+                Eva
               </a>
             </p>
           </div>
