@@ -7,12 +7,11 @@ import Header from "@/components/Header";
 
 const LAA_COFFEE_INFO = {
   address: "Jl. Raya Jetis, Dusun Sidolegi, Paringan, Kec. Jetis, Kabupaten Mojokerto, Jawa Timur 61352",
-  phone: "+62 819-9923-8377",
+  phone: "0819-9923-8377",
 };
 
 const MAPS_EMBED_URL =
-  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.0523519238647!2d112.65047!3d-7.506599!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e780c9c9c9c9d%3A0x8c8c8c8c8c8c8c8c!2sLaa%20Coffee!5e0!3m2!1sid!2sid!4v1620000000000";
-
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.0524!2d112.47117!3d-7.40437!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e780e54840e85df:0xd85c4aa566e2af10!2sLaa%20Coffee!5e0!3m2!1sid!2sid!4v1716899111111";
 
 export default function HomePage() {
   const router = useRouter();
@@ -26,10 +25,7 @@ export default function HomePage() {
       <Header onCartClick={handleCartOpenRedirect} />
 
       {/* Hero Section */}
-      <section 
-        className="relative min-h-[85vh] flex items-center justify-center bg-amber-950 bg-cover bg-center overflow-hidden py-16 px-4"
-        style={{ backgroundImage: "url('/images/cafe_hero_image.png')" }}
-      >
+      <section className="relative min-h-[85vh] flex items-center justify-center bg-amber-950 bg-cover bg-center overflow-hidden py-16 px-4" style={{ backgroundImage: "url('/images/cafe_hero_image.png')" }}>
         {/* Dark Elegant Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-amber-950/80" />
 
@@ -38,15 +34,11 @@ export default function HomePage() {
           <div className="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-400/30 px-4 py-1.5 rounded-full backdrop-blur-md text-amber-200 text-xs md:text-sm font-semibold tracking-wider uppercase select-none animate-pulse">
             <span>✨</span> Cozy Atmosphere & Premium Taste
           </div>
-          
-          <h1 className="text-4xl md:text-7xl font-black text-white tracking-tight leading-none">
-            Laa Coffee
-          </h1>
-          
-          <p className="text-lg md:text-2xl text-amber-100 italic font-medium max-w-2xl mx-auto leading-relaxed">
-            "Kedai Kopi Berkualitas dengan Suasana Nyaman dan Harga Terjangkau"
-          </p>
-          
+
+          <h1 className="text-4xl md:text-7xl font-black text-white tracking-tight leading-none">Laa Coffee</h1>
+
+          <p className="text-lg md:text-2xl text-amber-100 italic font-medium max-w-2xl mx-auto leading-relaxed">"Kedai Kopi Berkualitas dengan Suasana Nyaman dan Harga Terjangkau"</p>
+
           <p className="text-gray-300 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
             Nikmati hari-hari produktif Anda dengan secangkir kopi hangat terbaik dan aneka hidangan lezat. Tempat ideal untuk bekerja secara remote, hang-out santai, maupun berkumpul bersama keluarga.
           </p>
@@ -75,7 +67,6 @@ export default function HomePage() {
 
       {/* Why Choose Us & Featured Section */}
       <section className="max-w-6xl mx-auto px-4 py-16 md:py-24 space-y-20 md:space-y-28">
-        
         {/* Why Choose Us */}
         <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/5 p-8 md:p-12 border border-amber-100/50">
           <div className="text-center max-w-2xl mx-auto mb-12">
@@ -86,28 +77,31 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-amber-50/40 p-6 rounded-2xl border border-amber-100/60 hover:-translate-y-1 transition-transform duration-300">
-              <div className="text-4xl mb-4 p-3 bg-amber-100/60 w-fit rounded-xl">🏷️</div>
-              <h3 className="font-bold text-amber-950 text-lg mb-2">Harga Sangat Bersahabat</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Kami menyajikan menu kelas kafe mewah dengan harga kaki lima yang bersahabat untuk pelajar, mahasiswa, maupun pekerja.
-              </p>
+            <div className="bg-gradient-to-br from-amber-50/80 to-amber-100/40 p-6 rounded-2xl border border-amber-100/60 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden">
+              <div className="absolute top-4 right-4 text-5xl opacity-10">🏷️</div>
+              <div className="flex items-start gap-3 mb-3">
+                <div className="text-3xl">🏷️</div>
+                <h3 className="font-bold text-amber-950 text-lg">Harga Sangat Bersahabat</h3>
+              </div>
+              <p className="text-sm text-gray-600 leading-relaxed">Kami menyajikan menu kelas kafe mewah dengan harga kaki lima yang bersahabat untuk pelajar, mahasiswa, maupun pekerja.</p>
             </div>
 
-            <div className="bg-amber-50/40 p-6 rounded-2xl border border-amber-100/60 hover:-translate-y-1 transition-transform duration-300">
-              <div className="text-4xl mb-4 p-3 bg-amber-100/60 w-fit rounded-xl">⚡</div>
-              <h3 className="font-bold text-amber-950 text-lg mb-2">Pelayanan Cepat & Akurat</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Pesan dari meja Anda dengan sistem QR pintar, dan pesanan akan diproses secara real-time demi waktu tunggu yang minimal.
-              </p>
+            <div className="bg-gradient-to-br from-amber-50/80 to-amber-100/40 p-6 rounded-2xl border border-amber-100/60 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden">
+              <div className="absolute top-4 right-4 text-5xl opacity-10">⚡</div>
+              <div className="flex items-start gap-3 mb-3">
+                <div className="text-3xl">⚡</div>
+                <h3 className="font-bold text-amber-950 text-lg">Pelayanan Cepat & Akurat</h3>
+              </div>
+              <p className="text-sm text-gray-600 leading-relaxed">Pesan dari meja Anda dengan sistem QR pintar, dan pesanan akan diproses secara real-time demi waktu tunggu yang minimal.</p>
             </div>
 
-            <div className="bg-amber-50/40 p-6 rounded-2xl border border-amber-100/60 hover:-translate-y-1 transition-transform duration-300">
-              <div className="text-4xl mb-4 p-3 bg-amber-100/60 w-fit rounded-xl">❤️</div>
-              <h3 className="font-bold text-amber-950 text-lg mb-2">Dibuat Higienis & Segar</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Semua bahan dipilah ketat secara higienis, diseduh dan dimasak langsung saat Anda memesan untuk menjaga kenikmatan maksimal.
-              </p>
+            <div className="bg-gradient-to-br from-amber-50/80 to-amber-100/40 p-6 rounded-2xl border border-amber-100/60 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden">
+              <div className="absolute top-4 right-4 text-5xl opacity-10">❤️</div>
+              <div className="flex items-start gap-3 mb-3">
+                <div className="text-3xl">❤️</div>
+                <h3 className="font-bold text-amber-950 text-lg">Dibuat Higienis & Segar</h3>
+              </div>
+              <p className="text-sm text-gray-600 leading-relaxed">Semua bahan dipilah ketat secara higienis, diseduh dan dimasak langsung saat Anda memesan untuk menjaga kenikmatan maksimal.</p>
             </div>
           </div>
         </div>
@@ -116,15 +110,11 @@ export default function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 bg-white rounded-3xl overflow-hidden shadow-xl shadow-amber-900/5 border border-amber-100/50">
           <div className="lg:col-span-2 p-8 md:p-12 flex flex-col justify-center space-y-6">
             <div className="space-y-2">
-              <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-100 px-3 py-1 rounded-full uppercase tracking-wider">
-                Lokasi Kedai
-              </span>
+              <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-100 px-3 py-1 rounded-full uppercase tracking-wider">Lokasi Kedai</span>
               <h2 className="text-2xl md:text-3xl font-black text-amber-950 tracking-tight">Kunjungi Laa Coffee</h2>
             </div>
-            
-            <p className="text-sm text-gray-600 leading-relaxed">
-              Kami berlokasi di area strategis Mojokerto dengan suasana asri yang menenangkan. Silakan klik peta di samping untuk rute navigasi instan lewat Google Maps.
-            </p>
+
+            <p className="text-sm text-gray-600 leading-relaxed">Kami berlokasi di area strategis Mojokerto dengan suasana asri yang menenangkan. Silakan klik peta di samping untuk rute navigasi instan lewat Google Maps.</p>
 
             <div className="space-y-4 pt-2 border-t border-amber-50">
               <div className="flex items-start gap-3">
@@ -134,7 +124,7 @@ export default function HomePage() {
                   <p className="text-gray-500 mt-0.5">{LAA_COFFEE_INFO.address}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <span className="text-lg mt-0.5">📞</span>
                 <div className="text-xs">
@@ -146,19 +136,9 @@ export default function HomePage() {
           </div>
 
           <div className="lg:col-span-3 min-h-[320px] relative border-t lg:border-t-0 lg:border-l border-amber-100">
-            <iframe
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              src={MAPS_EMBED_URL}
-              className="w-full h-full absolute inset-0"
-            />
+            <iframe width="100%" height="100%" style={{ border: 0 }} loading="lazy" allowFullScreen referrerPolicy="no-referrer-when-downgrade" src={MAPS_EMBED_URL} className="w-full h-full absolute inset-0" />
           </div>
         </div>
-
       </section>
 
       {/* Footer */}
@@ -171,16 +151,15 @@ export default function HomePage() {
                 <span className="text-3xl">☕</span>
                 <span className="text-xl font-extrabold tracking-tight">Laa Coffee</span>
               </Link>
-              <p className="text-xs text-amber-200/70 leading-relaxed max-w-sm">
-                Kedai kopi pilihan utama dengan seduhan berkualitas tinggi dan menu berselera tinggi untuk menemani momen produktif dan santai Anda.
-              </p>
+              <p className="text-xs text-amber-200/70 leading-relaxed max-w-sm">Kedai kopi pilihan utama dengan seduhan berkualitas tinggi dan menu berselera tinggi untuk menemani momen produktif dan santai Anda.</p>
             </div>
 
             {/* Operating Hours */}
             <div className="space-y-4">
               <h4 className="font-bold text-sm uppercase tracking-wider text-amber-400">Jam Operasional</h4>
               <p className="text-xs text-amber-100/80 leading-relaxed">
-                Buka Setiap Hari<br />
+                Buka Setiap Hari
+                <br />
                 <span className="text-sm font-bold text-white mt-1 block">Pukul 08:00 - 22:00 WIB</span>
               </p>
             </div>
@@ -212,21 +191,11 @@ export default function HomePage() {
             <p>&copy; 2026 Laa Coffee. Semua hak cipta dilindungi.</p>
             <p>
               Developed by{" "}
-              <a 
-                href="https://www.linkedin.com/in/haii-akunafiann/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-amber-400 hover:text-white transition-colors font-semibold"
-              >
+              <a href="https://www.linkedin.com/in/haii-akunafiann/" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-white transition-colors font-semibold">
                 Nafi
-              </a>
-              {" "}&{" "}
-              <a 
-                href="https://www.linkedin.com/in/eva-ristiyanti/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-amber-400 hover:text-white transition-colors font-semibold"
-              >
+              </a>{" "}
+              &{" "}
+              <a href="https://www.linkedin.com/in/eva-ristiyanti/" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-white transition-colors font-semibold">
                 Eva
               </a>
             </p>

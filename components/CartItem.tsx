@@ -34,7 +34,11 @@ export default function CartItem({ item, onQuantityChange, onRemove }: CartItemP
       <div className="flex gap-3">
         {/* Product Image */}
         <div className="w-16 md:w-20 h-16 md:h-20 bg-amber-50 rounded-lg overflow-hidden flex-shrink-0 border border-amber-100">
-          <img src={item.image_url} alt={item.product_name} className="w-full h-full object-cover" />
+          {item.image_url === "☕" || !item.image_url ? (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-amber-100 text-2xl">☕</div>
+          ) : (
+            <img src={item.image_url} alt={item.product_name} className="w-full h-full object-cover" />
+          )}
         </div>
 
         {/* Product Details */}

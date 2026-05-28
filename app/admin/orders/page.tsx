@@ -57,6 +57,29 @@ export default function CustomerOrdersPage() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentDateTime, setCurrentDateTime] = useState<string>("");
+
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+      const timeStr = now.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      setCurrentDateTime(`${dateStr} • ${timeStr}`);
+    };
+
+    updateDateTime();
+    const interval = setInterval(updateDateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     fetchOrders();
@@ -136,46 +159,50 @@ export default function CustomerOrdersPage() {
     );
   }
 
-  const currentDate = new Date().toLocaleDateString("id-ID", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto p-1 md:p-4">
+    <div className="space-y-6 md:space-y-8 max-w-7xl mx-auto p-2 md:p-4">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-200 pb-5">
-        <div>
-          <h1 className="text-3xl font-black text-amber-900 tracking-tight">Pesanan Pelanggan</h1>
-          <p className="text-sm text-amber-700 mt-1">Pantau semua pesanan aktif di dapur dan riwayat penyelesaian transaksi.</p>
-          <p className="text-xs font-semibold text-amber-600/80 mt-2 bg-amber-100/50 inline-block px-3 py-1 rounded-lg border border-amber-200">{currentDate}</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-4 md:pb-5">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-amber-900 tracking-tight break-words">Pesanan Pelanggan</h1>
+          <p className="text-xs md:text-sm text-amber-700 mt-1">Pantau pesanan aktif di dapur</p>
+          <p className="text-[10px] md:text-xs font-semibold text-amber-600/80 mt-2 bg-amber-100/50 inline-block px-3 py-1 rounded-lg border border-amber-200 min-h-[28px]">{currentDateTime || "Memuat waktu..."}</p>
         </div>
-        <button 
+        <button
           onClick={fetchOrders}
-          className="self-start md:self-center px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold rounded-xl text-sm transition-all duration-200 shadow-sm active:scale-95"
+          className="inline-flex items-center justify-center px-4 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold rounded-xl text-sm transition-all duration-200 shadow-sm active:scale-95 w-full sm:w-auto"
+          title="Refresh pesanan"
         >
           🔄 Refresh Antrean
         </button>
       </div>
 
       {/* Grid of Queues */}
-      <div className="grid grid-cols-1 gap-8">
+      <div className="grid grid-cols-1 gap-6 md:gap-8">
         {/* Sedang Diproses Section */}
-        <div className="bg-white rounded-2xl border-2 border-amber-200 p-6 shadow-sm space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-amber-900 flex items-center gap-2">🔄 Sedang Diproses</h2>
+        <div className="bg-white rounded-lg md:rounded-2xl border-2 border-amber-200 p-4 md:p-6 shadow-sm space-y-4 md:space-y-6">
+          <div className="flex items-center justify-between flex-row gap-2">
+            <h2 className="text-lg md:text-xl font-bold text-amber-900 flex items-center gap-2">🔄 Diproses</h2>
             {processingOrders.length > 0 && (
-              <span className="bg-gradient-to-r from-orange-500 to-amber-600 text-white font-bold px-4 py-1.5 rounded-full text-xs shadow-md shadow-orange-100 animate-pulse">
-                {processingOrders.length} Pesanan Aktif
-              </span>
+              <span className="bg-gradient-to-r from-orange-500 to-amber-600 text-white font-bold px-3 py-1 md:px-4 md:py-1.5 rounded-full text-[10px] md:text-xs shadow-md shadow-orange-100 animate-pulse">{processingOrders.length} Pesanan Aktif</span>
             )}
           </div>
 
           {processingOrders.length > 0 ? (
             <div className="space-y-4">
               {processingOrders.map((order, index) => (
-                <ProcessingOrderItem key={order.id} orderId={order.orderId} customerName={order.customerName} orderTime={order.orderTime} totalAmount={order.totalAmount} index={index + 1} items={order.items} onComplete={() => handleCompleteClick(order)} />
+                <ProcessingOrderItem
+                  key={order.id}
+                  orderId={order.orderId}
+                  customerName={order.customerName}
+                  orderTime={order.orderTime}
+                  totalAmount={order.totalAmount}
+                  index={index + 1}
+                  items={order.items}
+                  onComplete={() => handleCompleteClick(order)}
+                />
               ))}
             </div>
           ) : (
@@ -188,14 +215,10 @@ export default function CustomerOrdersPage() {
         </div>
 
         {/* Riwayat Pesanan Selesai Section */}
-        <div className="bg-white rounded-2xl border-2 border-amber-200 p-6 shadow-sm space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-amber-900 flex items-center gap-2">✓ Riwayat Pesanan Selesai</h2>
-            {completedOrders.length > 0 && (
-              <span className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold px-4 py-1.5 rounded-full text-xs shadow-md shadow-emerald-100">
-                {completedOrders.length} Pesanan Selesai
-              </span>
-            )}
+        <div className="bg-white rounded-lg md:rounded-2xl border-2 border-amber-200 p-4 md:p-6 shadow-sm space-y-4 md:space-y-6">
+          <div className="flex items-center justify-between flex-row gap-2">
+            <h2 className="text-lg md:text-xl font-bold text-amber-900 flex items-center gap-2">✓ Selesai</h2>
+            {completedOrders.length > 0 && <span className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold px-3 py-1 md:px-4 md:py-1.5 rounded-full text-[10px] md:text-xs shadow-md shadow-emerald-100">{completedOrders.length} Pesanan Selesai</span>}
           </div>
 
           {completedOrders.length > 0 ? (

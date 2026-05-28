@@ -8,6 +8,7 @@ import { getOrdersByStatus } from "@/lib/database";
 export default function Sidebar() {
   const pathname = usePathname();
   const [pendingCount, setPendingCount] = useState(0);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchPendingCount = async () => {
@@ -65,48 +66,70 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-gradient-to-b from-amber-900 via-amber-850 to-amber-900 text-amber-50 min-h-screen transition-all duration-300 fixed left-0 top-0 shadow-2xl z-50 border-r border-amber-700">
-      {/* Header */}
-      <div className="p-5 border-b border-amber-700 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="text-2xl bg-amber-600/30 p-2.5 rounded-xl">☕</div>
-          <div>
-            <h1 className="font-bold text-lg text-white">Laa Coffee</h1>
-            <p className="text-xs text-amber-200">Admin Panel</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Menu Items */}
-      <nav className="mt-6 px-2 space-y-1">
-        {menuItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative group ${
-                isActive ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-lg shadow-amber-600/40" : "text-amber-100 hover:bg-amber-700/50 hover:text-white"
-              }`}
-            >
-              <span className="text-lg flex-shrink-0">{item.icon}</span>
-              <span className="font-medium flex-1 text-sm">{item.label}</span>
-              {item.label === "Validasi Pembayaran" && pendingCount > 0 && (
-                <span className="bg-rose-500 text-white font-bold rounded-full animate-pulse flex items-center justify-center px-2 py-0.5 text-[10px]">{pendingCount}</span>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Logout Button */}
-      <button
-        onClick={handleLogout}
-        className="absolute bottom-16 left-4 right-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 px-4 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center text-sm font-bold text-white shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 active:scale-95"
-        title="Keluar Admin"
-      >
-        Keluar
+    <>
+      {/* Hamburger Button for Mobile - Highest Z-Index */}
+      <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden fixed top-4 left-4 z-[60] bg-amber-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-amber-800 transition-colors" title="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
       </button>
-    </aside>
+
+      {/* Mobile Overlay */}
+      {isSidebarOpen && <div className="md:hidden fixed inset-0 bg-black/50 z-[55]" onClick={() => setIsSidebarOpen(false)} />}
+
+      {/* Sidebar */}
+      <aside
+        className={`w-64 bg-gradient-to-b from-amber-900 via-amber-850 to-amber-900 text-amber-50 min-h-screen transition-all duration-300 fixed left-0 top-0 shadow-2xl z-[58] border-r border-amber-700 transform md:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        {/* Header */}
+        <div className="p-5 border-b border-amber-700 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="text-2xl bg-amber-600/30 p-2.5 rounded-xl">☕</div>
+            <div>
+              <h1 className="font-bold text-lg text-white">Laa Coffee</h1>
+              <p className="text-xs text-amber-200">Admin Panel</p>
+            </div>
+          </div>
+          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-amber-100 hover:text-white p-1" title="Tutup menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Menu Items */}
+        <nav className="mt-6 px-2 space-y-1">
+          {menuItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsSidebarOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative group ${
+                  isActive ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-lg shadow-amber-600/40" : "text-amber-100 hover:bg-amber-700/50 hover:text-white"
+                }`}
+              >
+                <span className="text-lg flex-shrink-0">{item.icon}</span>
+                <span className="font-medium flex-1 text-sm">{item.label}</span>
+                {item.label === "Validasi Pembayaran" && pendingCount > 0 && <span className="bg-rose-500 text-white font-bold rounded-full animate-pulse flex items-center justify-center px-2 py-0.5 text-[10px]">{pendingCount}</span>}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="absolute bottom-16 left-4 right-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 px-4 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center text-sm font-bold text-white shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 active:scale-95"
+          title="Keluar Admin"
+        >
+          Keluar
+        </button>
+      </aside>
+    </>
   );
 }

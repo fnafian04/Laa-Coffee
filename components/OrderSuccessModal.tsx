@@ -89,17 +89,9 @@ export default function OrderSuccessModal({ isOpen, orderNumber, customerName, t
                   {/* Customization Details */}
                   <div className="flex flex-wrap gap-1 mt-1">
                     {item.temperature && (
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${
-                        item.temperature === "hot" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
-                      }`}>
-                        {item.temperature === "hot" ? "🔥 Panas" : "❄️ Dingin"}
-                      </span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${item.temperature === "hot" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}>{item.temperature === "hot" ? "🔥 Panas" : "❄️ Dingin"}</span>
                     )}
-                    {item.customNotes && (
-                      <span className="text-[10px] bg-white text-gray-600 px-1.5 py-0.5 rounded border border-amber-100 italic">
-                        Catatan: {item.customNotes}
-                      </span>
-                    )}
+                    {item.customNotes && <span className="text-[10px] bg-white text-gray-600 px-1.5 py-0.5 rounded border border-amber-100 italic">Catatan: {item.customNotes}</span>}
                   </div>
                 </div>
               ))}

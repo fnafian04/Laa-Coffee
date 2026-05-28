@@ -73,11 +73,15 @@ export default function ProductCustomizerModal({
         
         {/* Product Image Panel */}
         <div className="relative w-full h-48 bg-amber-50 flex-shrink-0">
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
+          {product.image_url === "☕" || !product.image_url ? (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-amber-100 text-5xl">☕</div>
+          ) : (
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
+          )}
           <button
             onClick={onClose}
             className="absolute top-3 right-3 bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-black/70 transition-all font-semibold active:scale-90"

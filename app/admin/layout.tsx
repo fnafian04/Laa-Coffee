@@ -38,7 +38,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <Sidebar />
       {/* Main Content */}
       <main className="flex-1 min-h-screen bg-amber-50 transition-all duration-300" style={{ marginLeft: "256px" }}>
-        <div className="p-6 lg:p-8">{children}</div>
+        <div className="p-6 lg:p-8 pt-20 md:pt-6 lg:pt-8">{children}</div>
       </main>
 
       {/* Responsive adjustments */}

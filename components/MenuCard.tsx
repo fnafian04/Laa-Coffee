@@ -43,11 +43,15 @@ export default function MenuCard({ product, onSelect }: MenuCardProps) {
     >
       {/* Product Image */}
       <div className="relative w-full h-32 sm:h-40 md:h-48 bg-amber-50/50 overflow-hidden">
-        <img 
-          src={product.image_url} 
-          alt={product.name} 
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
-        />
+        {product.image_url === "☕" || !product.image_url ? (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-amber-100 text-4xl">☕</div>
+        ) : (
+          <img 
+            src={product.image_url} 
+            alt={product.name} 
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+          />
+        )}
         {!product.is_available && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] flex items-center justify-center">
             <span className="text-white font-bold text-[10px] sm:text-xs bg-red-650 px-2.5 py-1 rounded-full shadow-md">

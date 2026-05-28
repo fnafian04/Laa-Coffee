@@ -84,7 +84,8 @@ export default function MenuPage() {
         setCategories([
           { id: "all", name: "Semua Menu", icon: "⭐" },
           { id: "1", name: "Minuman", icon: "☕" },
-          { id: "2", name: "Makanan", icon: "🍰" },
+          { id: "2", name: "Makanan", icon: "�" },
+          { id: "3", name: "Snack", icon: "🛍️" },
         ]);
       } finally {
         setIsLoading(false);
@@ -105,26 +106,13 @@ export default function MenuPage() {
   // Tambah produk ke keranjang
   const handleAddToCart = (product: Product, quantity: number, temperature: string, customNotes: string) => {
     setCartItems((prev) => {
-      const existingItem = prev.find(
-        (item) =>
-          item.product_id === product.id &&
-          item.temperature === (temperature || undefined) &&
-          item.customNotes === (customNotes || undefined)
-      );
+      const existingItem = prev.find((item) => item.product_id === product.id && item.temperature === (temperature || undefined) && item.customNotes === (customNotes || undefined));
 
       if (existingItem) {
-        return prev.map((item) =>
-          item.product_id === product.id &&
-          item.temperature === (temperature || undefined) &&
-          item.customNotes === (customNotes || undefined)
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
+        return prev.map((item) => (item.product_id === product.id && item.temperature === (temperature || undefined) && item.customNotes === (customNotes || undefined) ? { ...item, quantity: item.quantity + quantity } : item));
       }
 
-      const newItemId = typeof crypto !== "undefined" && crypto.randomUUID 
-        ? crypto.randomUUID() 
-        : Math.random().toString(36).substring(2, 9);
+      const newItemId = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 9);
 
       return [
         ...prev,
@@ -262,16 +250,15 @@ export default function MenuPage() {
                 <span className="text-3xl">☕</span>
                 <span className="text-xl font-extrabold tracking-tight">Laa Coffee</span>
               </Link>
-              <p className="text-xs text-amber-200/70 leading-relaxed max-w-sm">
-                Kedai kopi pilihan utama dengan seduhan berkualitas tinggi dan menu berselera tinggi untuk menemani momen produktif dan santai Anda.
-              </p>
+              <p className="text-xs text-amber-200/70 leading-relaxed max-w-sm">Kedai kopi pilihan utama dengan seduhan berkualitas tinggi dan menu berselera tinggi untuk menemani momen produktif dan santai Anda.</p>
             </div>
 
             {/* Operating Hours */}
             <div className="space-y-4">
               <h4 className="font-bold text-sm uppercase tracking-wider text-amber-400">Jam Operasional</h4>
               <p className="text-xs text-amber-100/80 leading-relaxed">
-                Buka Setiap Hari<br />
+                Buka Setiap Hari
+                <br />
                 <span className="text-sm font-bold text-white mt-1 block">Pukul 08:00 - 22:00 WIB</span>
               </p>
             </div>
@@ -303,21 +290,11 @@ export default function MenuPage() {
             <p>&copy; 2026 Laa Coffee. Semua hak cipta dilindungi.</p>
             <p>
               Developed by{" "}
-              <a 
-                href="https://www.linkedin.com/in/haii-akunafiann/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-amber-400 hover:text-white transition-colors font-semibold"
-              >
+              <a href="https://www.linkedin.com/in/haii-akunafiann/" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-white transition-colors font-semibold">
                 Nafi
-              </a>
-              {" "}&{" "}
-              <a 
-                href="https://www.linkedin.com/in/eva-ristiyanti/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-amber-400 hover:text-white transition-colors font-semibold"
-              >
+              </a>{" "}
+              &{" "}
+              <a href="https://www.linkedin.com/in/eva-ristiyanti/" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-white transition-colors font-semibold">
                 Eva
               </a>
             </p>
@@ -326,12 +303,7 @@ export default function MenuPage() {
       </footer>
 
       {/* Product Customizer Modal */}
-      <ProductCustomizerModal
-        isOpen={isCustomizerOpen}
-        product={selectedCustomizeProduct}
-        onClose={() => setIsCustomizerOpen(false)}
-        onAddToCart={handleAddToCart}
-      />
+      <ProductCustomizerModal isOpen={isCustomizerOpen} product={selectedCustomizeProduct} onClose={() => setIsCustomizerOpen(false)} onAddToCart={handleAddToCart} />
 
       {/* Cart Sidebar */}
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} cartItems={cartItems} onQuantityChange={handleQuantityChange} onRemove={handleRemoveFromCart} onCheckout={handleCheckout} />
@@ -353,18 +325,14 @@ export default function MenuPage() {
       )}
       {/* Floating Mobile Cart Indicator */}
       {cartCount > 0 && !isCartOpen && (
-        <div 
+        <div
           onClick={() => setIsCartOpen(true)}
           className="md:hidden fixed bottom-20 left-4 right-4 z-40 bg-gradient-to-r from-amber-950 to-amber-900 text-white px-4 py-3.5 rounded-2xl flex items-center justify-between shadow-xl shadow-amber-950/20 active:scale-98 transition-all border border-amber-800/40 cursor-pointer"
         >
           <div className="flex items-center gap-3">
-            <span className="bg-amber-800/80 px-2.5 py-1 rounded-xl text-xs font-black tracking-wider uppercase border border-amber-700/50">
-              {cartCount} Item
-            </span>
+            <span className="bg-amber-800/80 px-2.5 py-1 rounded-xl text-xs font-black tracking-wider uppercase border border-amber-700/50">{cartCount} Item</span>
             <div className="h-4 w-px bg-white/20" />
-            <span className="text-xs sm:text-sm font-extrabold text-amber-100">
-              Rp {cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toLocaleString("id-ID")}
-            </span>
+            <span className="text-xs sm:text-sm font-extrabold text-amber-100">Rp {cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toLocaleString("id-ID")}</span>
           </div>
           <div className="flex items-center gap-1.5 text-xs font-black tracking-wide uppercase">
             <span>Lihat Keranjang</span>

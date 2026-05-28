@@ -21,43 +21,49 @@ interface ProcessingOrderItemProps {
 
 export default function ProcessingOrderItem({ orderId, customerName, orderTime, totalAmount, index, items, onComplete }: ProcessingOrderItemProps) {
   return (
-    <div className="bg-white border-l-4 border-orange-500 rounded-lg p-4 flex items-start justify-between hover:shadow-md transition-shadow gap-4">
+    <div className="bg-white border-l-4 border-orange-500 rounded-lg p-4 flex flex-col md:flex-row md:items-start md:justify-between hover:shadow-md transition-shadow gap-4">
       {/* Left - Order Info */}
-      <div className="flex items-start gap-4 flex-1">
+      <div className="flex items-start gap-3 md:gap-4 flex-1">
         {/* Number Badge */}
-        <div className="bg-orange-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5">{index}</div>
+        <div className="bg-orange-500 text-white rounded-full w-9 h-9 md:w-10 md:h-10 flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0 mt-0.5">{index}</div>
 
         {/* Order Details */}
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-bold text-amber-900">{orderId}</h3>
-            <span className="bg-orange-100 text-orange-700 text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">🔄 Diproses</span>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <div className="flex items-center gap-2">
+              <h3 className="font-extrabold text-amber-900 text-sm md:text-base">{orderId}</h3>
+              <span className="bg-orange-100 text-orange-700 text-[10px] md:text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">🔄 Diproses</span>
+            </div>
+            {/* Total amount (only visible on mobile here, hidden on md) */}
+            <span className="text-base font-black text-amber-900 md:hidden">Rp {totalAmount.toLocaleString("id-ID")}</span>
           </div>
-          <p className="text-sm text-amber-700 font-semibold mb-2">
-            {customerName} • {orderTime}
+          <p className="text-xs md:text-sm text-amber-700 font-semibold mb-2 flex flex-wrap gap-1 items-center">
+            <span className="text-amber-900 font-bold">{customerName}</span>
+            <span className="text-amber-400">•</span>
+            <span className="text-amber-600">{orderTime}</span>
           </p>
 
           {/* Nested Order Items List */}
           {items && items.length > 0 && (
             <div className="mt-2 space-y-1.5 border-t border-dashed border-amber-200 pt-2 max-w-lg">
               {items.map((item) => (
-                <div key={item.id} className="text-xs text-amber-900 bg-amber-50/50 p-1.5 rounded flex flex-col gap-0.5 border border-amber-100/50">
-                  <div className="flex justify-between font-bold">
-                    <span className="flex items-center gap-1.5">
-                      <span>{item.product?.name}</span>
+                <div key={item.id} className="text-xs text-amber-900 bg-amber-50/50 p-2 rounded flex flex-col gap-0.5 border border-amber-100/50">
+                  <div className="flex justify-between items-start gap-2 font-bold">
+                    <span className="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
+                      <span className="break-words">{item.product?.name}</span>
                       {item.temperature && (
-                        <span className={`text-[8px] px-1 py-0.5 rounded font-extrabold ${
+                        <span className={`text-[8px] px-1 py-0.5 rounded font-extrabold flex-shrink-0 ${
                           item.temperature === "hot" ? "bg-red-50 text-red-600 border border-red-100" : "bg-blue-50 text-blue-600 border border-blue-100"
                         }`}>
                           {item.temperature === "hot" ? "HOT" : "COLD"}
                         </span>
                       )}
                     </span>
-                    <span className="text-amber-800 font-extrabold">x{item.quantity}</span>
+                    <span className="text-amber-800 font-extrabold flex-shrink-0">x{item.quantity}</span>
                   </div>
                   {item.custom_notes && (
                     <p className="text-[10px] text-gray-500 italic mt-0.5 border-l-2 border-amber-300 pl-1">
-                      💬 Catatan: {item.custom_notes}
+                      Catatan: {item.custom_notes}
                     </p>
                   )}
                 </div>
@@ -68,9 +74,23 @@ export default function ProcessingOrderItem({ orderId, customerName, orderTime, 
       </div>
 
       {/* Right - Amount & Button */}
-      <div className="flex flex-col items-end gap-3 flex-shrink-0">
-        <span className="text-lg font-extrabold text-amber-900">Rp {totalAmount.toLocaleString("id-ID")}</span>
-        <button onClick={onComplete} className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-lg transition-colors active:scale-95 text-sm shadow-sm">
+      <div className="w-full md:w-auto flex flex-row md:flex-col items-center md:items-end justify-between md:justify-start gap-3 mt-4 md:mt-0 pt-3 md:pt-0 border-t border-dashed border-amber-100 md:border-0 flex-shrink-0">
+        {/* Price (hidden on mobile header, shown here on desktop) */}
+        <div className="hidden md:flex flex-col items-end">
+          <span className="text-xs text-amber-600 font-semibold">Total Tagihan</span>
+          <span className="text-lg font-black text-amber-900">Rp {totalAmount.toLocaleString("id-ID")}</span>
+        </div>
+
+        {/* Price on mobile footer (left side) */}
+        <div className="md:hidden flex flex-col">
+          <span className="text-[10px] text-amber-600 font-semibold">Total Tagihan</span>
+          <span className="text-base font-extrabold text-amber-900">Rp {totalAmount.toLocaleString("id-ID")}</span>
+        </div>
+
+        <button 
+          onClick={onComplete} 
+          className="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2.5 rounded-xl transition-all duration-200 active:scale-95 text-xs md:text-sm shadow-md shadow-green-100 hover:shadow-green-200 flex items-center justify-center gap-1.5"
+        >
           ✓ Selesaikan Pesanan
         </button>
       </div>
