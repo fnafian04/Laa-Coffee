@@ -12,7 +12,7 @@ interface MenuListProps {
 }
 
 export default function MenuList({ items, category, onEdit, onDelete }: MenuListProps) {
-  const categoryIcon = category.includes("Minuman") ? "🥤" : category.includes("Makanan") ? "🍗" : category.includes("Snack") ? "🍿" : "🍽️";
+  const categoryIcon = category.includes("Minuman") ? "☕" : category.includes("Makanan") ? "🍜" : category.includes("Snack") ? "🍟" : "🍽️";
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; item: any | null; isLoading: boolean }>({
     isOpen: false,
     item: null,

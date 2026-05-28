@@ -257,6 +257,233 @@ export default function AdminDashboard() {
                 <p className="text-xs text-amber-700">Tambah menu baru atau edit ketersediaan menu</p>
               </div>
             </Link>
+
+            {/* Action 5: Cetak QR Code Meja */}
+            <div className="bg-white rounded-xl p-5 border-2 border-amber-200 shadow-sm space-y-4">
+              <div className="flex items-center gap-4">
+                <span className="text-3xl p-3 bg-amber-50 rounded-xl select-none">🔳</span>
+                <div>
+                  <h3 className="font-bold text-amber-900 text-base">Cetak QR Code Meja</h3>
+                  <p className="text-xs text-amber-700">Buat QR Code meja untuk diprint dan ditempel</p>
+                </div>
+              </div>
+              <div className="flex gap-2 pt-1">
+                <select 
+                  id="table-qr-select" 
+                  className="flex-1 px-3 py-2 border-2 border-amber-200 rounded-lg text-xs font-bold text-amber-900 focus:outline-none focus:border-amber-600 bg-white"
+                  title="Pilih Nomor Meja"
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                    <option key={num} value={num}>Meja {num}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => {
+                    const select = document.getElementById('table-qr-select') as HTMLSelectElement;
+                    const tableNum = select?.value || '1';
+                    const printWindow = window.open('', '_blank');
+                    if (printWindow) {
+                      printWindow.document.write(`
+                        <html>
+                          <head>
+                            <title>Cetak QR Code Meja ${tableNum}</title>
+                            <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+                            <style>
+                              * { box-sizing: border-box; }
+                              body {
+                                font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                min-height: 100vh;
+                                margin: 0;
+                                background-color: #fcf8f2;
+                                color: #451a03;
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                              }
+                              .card {
+                                border: 3px solid #78350f;
+                                padding: 35px 30px;
+                                border-radius: 28px;
+                                background: white;
+                                text-align: center;
+                                box-shadow: 0 20px 40px rgba(120,53,15,0.08);
+                                width: 340px;
+                                position: relative;
+                                overflow: hidden;
+                              }
+                              .card::before {
+                                content: '';
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                height: 8px;
+                                background: linear-gradient(90deg, #b45309, #78350f, #b45309);
+                              }
+                              .logo-area {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 8px;
+                                margin-bottom: 5px;
+                              }
+                              .logo-text {
+                                font-size: 20px;
+                                font-weight: 800;
+                                letter-spacing: 2px;
+                                text-transform: uppercase;
+                                color: #78350f;
+                              }
+                              .logo-icon {
+                                font-size: 22px;
+                              }
+                              .tagline {
+                                font-size: 10px;
+                                text-transform: uppercase;
+                                letter-spacing: 1.5px;
+                                color: #b45309;
+                                font-weight: 700;
+                                margin-bottom: 22px;
+                              }
+                              .table-badge {
+                                background: #78350f;
+                                color: #fefaf6;
+                                padding: 8px 24px;
+                                border-radius: 9999px;
+                                font-size: 16px;
+                                font-weight: 800;
+                                letter-spacing: 1px;
+                                display: inline-block;
+                                margin-bottom: 22px;
+                                box-shadow: 0 4px 10px rgba(120,53,15,0.15);
+                              }
+                              .qr-wrapper {
+                                position: relative;
+                                display: inline-block;
+                                padding: 15px;
+                                background: #faf6f0;
+                                border-radius: 20px;
+                                border: 2px dashed #b45309;
+                                margin-bottom: 20px;
+                              }
+                              .corner {
+                                position: absolute;
+                                width: 12px;
+                                height: 12px;
+                                border: 3px solid #78350f;
+                              }
+                              .top-left { top: 8px; left: 8px; border-right: none; border-bottom: none; border-top-left-radius: 6px; }
+                              .top-right { top: 8px; right: 8px; border-left: none; border-bottom: none; border-top-right-radius: 6px; }
+                              .bottom-left { bottom: 8px; left: 8px; border-right: none; border-top: none; border-bottom-left-radius: 6px; }
+                              .bottom-right { bottom: 8px; right: 8px; border-left: none; border-top: none; border-bottom-right-radius: 6px; }
+                              .qr-img {
+                                display: block;
+                                border-radius: 8px;
+                                width: 180px;
+                                height: 180px;
+                              }
+                              .instruction {
+                                font-size: 13px;
+                                font-weight: 700;
+                                color: #78350f;
+                                margin-bottom: 18px;
+                                line-height: 1.4;
+                              }
+                              .url-section {
+                                background: #fdfaf6;
+                                border: 1px solid #fed7aa;
+                                padding: 10px 12px;
+                                border-radius: 12px;
+                                margin-bottom: 22px;
+                              }
+                              .url-label {
+                                font-size: 9px;
+                                font-weight: 800;
+                                text-transform: uppercase;
+                                color: #b45309;
+                                letter-spacing: 1px;
+                                margin-bottom: 4px;
+                              }
+                              .url-text {
+                                font-size: 11px;
+                                font-weight: 700;
+                                color: #451a03;
+                                word-break: break-all;
+                                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+                              }
+                              .footer-text {
+                                font-size: 10px;
+                                color: #92400e;
+                                font-weight: 600;
+                              }
+                              .btn-print {
+                                background: #78350f;
+                                color: white;
+                                border: none;
+                                padding: 12px 28px;
+                                font-weight: 800;
+                                border-radius: 12px;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                                font-size: 14px;
+                                margin-top: 25px;
+                                box-shadow: 0 4px 12px rgba(120,53,15,0.2);
+                              }
+                              .btn-print:hover {
+                                background: #451a03;
+                                transform: translateY(-1px);
+                                box-shadow: 0 6px 16px rgba(120,53,15,0.25);
+                              }
+                              @media print {
+                                .btn-print { display: none; }
+                                body { background: white; }
+                                .card { border: 3px solid #78350f; box-shadow: none; margin: 0 auto; }
+                              }
+                            </style>
+                          </head>
+                          <body>
+                            <div class="card">
+                              <div class="logo-area">
+                                <span class="logo-icon">☕</span>
+                                <span class="logo-text">Laa Coffee</span>
+                              </div>
+                              <div class="tagline">Order At Table</div>
+                              
+                              <div class="table-badge">MEJA ${tableNum}</div>
+                              
+                              <div class="qr-wrapper">
+                                <div class="corner top-left"></div>
+                                <div class="corner top-right"></div>
+                                <div class="corner bottom-left"></div>
+                                <div class="corner bottom-right"></div>
+                                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=78350f&data=${encodeURIComponent('https://laa-coffee.vercel.app/menu?table=' + tableNum)}" alt="QR Code Meja ${tableNum}" />
+                              </div>
+                              
+                              <div class="instruction">Pindai QR Code untuk memesan<br/>secara digital dari meja Anda</div>
+                              
+                              <div class="url-section">
+                                <div class="url-label">Atau akses URL manual:</div>
+                                <div class="url-text">https://laa-coffee.vercel.app/menu?table=${tableNum}</div>
+                              </div>
+                              
+                              <div class="footer-text">Terima kasih atas kunjungan Anda</div>
+                              <button class="btn-print" onclick="window.print()">🖨️ Cetak Label QR</button>
+                            </div>
+                          </body>
+                        </html>
+                      `);
+                      printWindow.document.close();
+                    }
+                  }}
+                  className="bg-amber-900 hover:bg-amber-950 text-white font-bold px-4 py-2 rounded-lg text-xs md:text-sm active:scale-95 transition-all shadow-sm"
+                >
+                  Cetak
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 

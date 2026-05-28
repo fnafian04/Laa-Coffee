@@ -32,7 +32,10 @@ export default function CartSidebar({ isOpen, onClose, cartItems, onQuantityChan
         {/* Header */}
         <div className="bg-amber-800 text-white p-4 flex items-center justify-between">
           <h2 className="text-xl font-bold flex items-center gap-2">
-            <span>🛒</span> Keranjang Belanja
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+            </svg>
+            <span>Keranjang Belanja</span>
           </h2>
           <button onClick={onClose} className="text-2xl hover:opacity-80 transition" aria-label="Tutup keranjang">
             ✕
@@ -43,8 +46,10 @@ export default function CartSidebar({ isOpen, onClose, cartItems, onQuantityChan
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <span className="text-4xl mb-3">🛒</span>
-              <p className="text-gray-500 italic">Keranjang kosong, silakan tambah produk.</p>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-12 h-12 text-gray-300 mb-3">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+              </svg>
+              <p className="text-gray-500 italic text-sm">Keranjang kosong, silakan tambah produk.</p>
             </div>
           ) : (
             cartItems.map((item) => <CartItem key={item.id} item={item} onQuantityChange={onQuantityChange} onRemove={onRemove} />)
@@ -59,7 +64,10 @@ export default function CartSidebar({ isOpen, onClose, cartItems, onQuantityChan
               <span className="text-xl font-bold text-amber-800">{formatPrice(totalPrice)}</span>
             </div>
             <button onClick={onCheckout} className="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold py-3 rounded-lg transition flex items-center justify-center gap-2">
-              <span>🛒</span> Pesan Sekarang
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5 text-white">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+              </svg>
+              <span>Pesan Sekarang</span>
             </button>
           </div>
         )}
@@ -75,7 +83,10 @@ export default function CartSidebar({ isOpen, onClose, cartItems, onQuantityChan
         {/* Header */}
         <div className="px-4 py-3 border-b border-amber-100 flex items-center justify-between">
           <h2 className="text-lg font-bold text-amber-900 flex items-center gap-2">
-            <span>🛒</span> Keranjang
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+            </svg>
+            <span>Keranjang</span>
           </h2>
           <button onClick={onClose} className="text-2xl hover:opacity-70" aria-label="Tutup">
             ✕
@@ -86,7 +97,9 @@ export default function CartSidebar({ isOpen, onClose, cartItems, onQuantityChan
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8">
-              <span className="text-3xl mb-2">🛒</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-10 h-10 text-gray-300 mb-2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+              </svg>
               <p className="text-gray-500 text-sm italic">Keranjang kosong</p>
             </div>
           ) : (
@@ -102,7 +115,10 @@ export default function CartSidebar({ isOpen, onClose, cartItems, onQuantityChan
               <span className="text-lg font-bold text-amber-800">{formatPrice(totalPrice)}</span>
             </div>
             <button onClick={onCheckout} className="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold py-3 rounded-lg transition flex items-center justify-center gap-2">
-              <span>🛒</span> Pesan Sekarang
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5 text-white">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0z" />
+              </svg>
+              <span>Pesan Sekarang</span>
             </button>
           </div>
         )}

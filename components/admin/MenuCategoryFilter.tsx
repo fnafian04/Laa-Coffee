@@ -15,7 +15,7 @@ export default function MenuCategoryFilter({ categories, selectedCategory, onCat
           onClick={() => onCategoryChange(category)}
           className={`px-6 py-2 rounded-lg font-medium transition-all ${selectedCategory === category ? "bg-amber-700 text-white" : "bg-amber-100 text-amber-900 hover:bg-amber-200"}`}
         >
-          {category === "Semua" ? "🍽️ Semua" : category === "Minuman" ? "🥤 Minuman" : "🍗 Makanan"}
+          {category === "Semua" ? "🍽️ Semua" : category === "Minuman" ? "☕ Minuman" : category === "Makanan" ? "🍜 Makanan" : category === "Snack" ? "🍟 Snack" : `🍽️ ${category}`}
         </button>
       ))}
     </div>

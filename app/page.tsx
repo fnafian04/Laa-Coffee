@@ -11,7 +11,7 @@ const LAA_COFFEE_INFO = {
 };
 
 const MAPS_EMBED_URL =
-  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.0524!2d112.47117!3d-7.40437!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e780e54840e85df:0xd85c4aa566e2af10!2sLaa%20Coffee!5e0!3m2!1sid!2sid!4v1716899111111";
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.0524021703673!2d112.4737428!3d-7.4047919!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e780e54840e85df:0xd85c4aa566e2af10!2sLaa%20Coffee!5e0!3m2!1sid!2sid!4v1716899111111";
 
 export default function HomePage() {
   const router = useRouter();
@@ -48,10 +48,13 @@ export default function HomePage() {
               href="/menu"
               className="bg-amber-700 hover:bg-amber-600 border border-amber-600/40 text-white font-bold py-4 px-10 rounded-2xl text-sm md:text-base transition-all active:scale-95 shadow-lg shadow-amber-950/30 flex items-center gap-2 justify-center"
             >
-              <span>🛒</span> Pesan Sekarang
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-5 h-5 text-white">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+              </svg>
+              <span>Pesan Sekarang</span>
             </Link>
             <a
-              href="https://maps.app.goo.gl/9QhN5rtWNVWj2ygr9"
+              href="https://www.google.com/maps/place/Laa+coffee/@-7.4047919,112.4737428,691m/data=!3m1!1e3!4m6!3m5!1s0x2e780e54840e85df:0xd85c4aa566e2af10!8m2!3d-7.4043688!4d112.4711769!16s%2Fg%2F11f0wry4b6?entry=ttu&g_ep=EgoyMDI2MDUyNS4wIKXMDSoASAFQAw%3D%3D"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white/10 hover:bg-white/15 text-white font-bold py-4 px-10 rounded-2xl text-sm md:text-base transition-all active:scale-95 border border-white/20 backdrop-blur-sm flex items-center gap-2 justify-center"

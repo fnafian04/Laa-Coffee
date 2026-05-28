@@ -78,7 +78,7 @@ export default function OrderCard({ orderId, customerName, orderTime, totalAmoun
         {minumanItems.length > 0 && (
           <div className="border-2 border-amber-200 rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="font-semibold text-sm text-amber-900 flex items-center gap-2">🥤 Minuman</h4>
+              <h4 className="font-semibold text-sm text-amber-900 flex items-center gap-2">☕ Minuman</h4>
               <span className="bg-amber-700 text-white text-xs font-bold px-2 py-1 rounded">{minumanItems.length} item</span>
             </div>
             <div className="space-y-2">
@@ -114,7 +114,7 @@ export default function OrderCard({ orderId, customerName, orderTime, totalAmoun
         {makananItems.length > 0 && (
           <div className="border-2 border-amber-200 rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="font-semibold text-sm text-amber-900 flex items-center gap-2">🍗 Makanan</h4>
+              <h4 className="font-semibold text-sm text-amber-900 flex items-center gap-2">🍜 Makanan</h4>
               <span className="bg-amber-700 text-white text-xs font-bold px-2 py-1 rounded">{makananItems.length} item</span>
             </div>
             <div className="space-y-2">

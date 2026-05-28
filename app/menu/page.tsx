@@ -15,7 +15,7 @@ import { getCategories, getProducts, createOrder } from "@/lib/database";
 
 export default function MenuPage() {
   const router = useRouter();
-  const [tableNumber, setTableNumber] = useState(1);
+  const [tableNumber, setTableNumber] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -33,10 +33,20 @@ export default function MenuPage() {
     totalPrice: number;
   } | null>(null);
 
-  // Check for auto-open cart parameter
+  // Check for auto-open cart and table query parameter on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      
+      // Get table parameter
+      const tableParam = params.get("table");
+      if (tableParam) {
+        const parsedTable = parseInt(tableParam);
+        if (!isNaN(parsedTable) && parsedTable > 0) {
+          setTableNumber(parsedTable);
+        }
+      }
+
       if (params.get("cart") === "open") {
         setIsCartOpen(true);
         // Clear search parameter without reloading page
@@ -56,11 +66,17 @@ export default function MenuPage() {
         // Add "Semua Menu" as first category
         const allCategories: Category[] = [
           { id: "all", name: "Semua Menu", icon: "⭐" },
-          ...categoriesData.map((cat: any) => ({
-            id: cat.id,
-            name: cat.name,
-            icon: cat.icon || "🍽️",
-          })),
+          ...categoriesData.map((cat: any) => {
+            let icon = cat.icon || "🍽️";
+            if (cat.name === "Minuman") icon = "☕";
+            else if (cat.name === "Makanan") icon = "🍜";
+            else if (cat.name === "Snack") icon = "🍟";
+            return {
+              id: cat.id,
+              name: cat.name,
+              icon,
+            };
+          }),
         ];
 
         // Map products to match Product interface
@@ -84,8 +100,8 @@ export default function MenuPage() {
         setCategories([
           { id: "all", name: "Semua Menu", icon: "⭐" },
           { id: "1", name: "Minuman", icon: "☕" },
-          { id: "2", name: "Makanan", icon: "�" },
-          { id: "3", name: "Snack", icon: "🛍️" },
+          { id: "2", name: "Makanan", icon: "🍜" },
+          { id: "3", name: "Snack", icon: "🍟" },
         ]);
       } finally {
         setIsLoading(false);
@@ -309,7 +325,7 @@ export default function MenuPage() {
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} cartItems={cartItems} onQuantityChange={handleQuantityChange} onRemove={handleRemoveFromCart} onCheckout={handleCheckout} />
 
       {/* Checkout Modal */}
-      <CheckoutModal isOpen={isCheckoutModalOpen} cartItems={cartItems} totalPrice={cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)} onSubmit={handleCheckoutSubmit} onCancel={() => setIsCheckoutModalOpen(false)} />
+      <CheckoutModal isOpen={isCheckoutModalOpen} cartItems={cartItems} totalPrice={cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)} defaultTableNumber={tableNumber} onSubmit={handleCheckoutSubmit} onCancel={() => setIsCheckoutModalOpen(false)} />
 
       {/* Order Success Modal */}
       {orderData && (
@@ -336,7 +352,9 @@ export default function MenuPage() {
           </div>
           <div className="flex items-center gap-1.5 text-xs font-black tracking-wide uppercase">
             <span>Lihat Keranjang</span>
-            <span className="text-base">🛒</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-5 h-5 text-white">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+            </svg>
           </div>
         </div>
       )}

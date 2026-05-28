@@ -84,8 +84,8 @@ CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id)
 -- Insert categories
 INSERT INTO categories (name, icon) VALUES
   ('Minuman', '☕'),
-  ('Makanan', '🍰'),
-  ('Snack', '🍪')
+  ('Makanan', '🍜'),
+  ('Snack', '🍟')
 ON CONFLICT (name) DO NOTHING;
 
 -- Insert products (Minuman)

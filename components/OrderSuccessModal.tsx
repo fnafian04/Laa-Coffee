@@ -52,21 +52,42 @@ export default function OrderSuccessModal({ isOpen, orderNumber, customerName, t
           {/* Order Info Box */}
           <div className="bg-gradient-to-br from-amber-50 to-amber-100 border-2 border-amber-200 rounded-xl p-5 space-y-3">
             <div className="flex items-center justify-between pb-3 border-b border-amber-200">
-              <p className="text-xs text-amber-700 font-semibold uppercase tracking-wide">📋 Nomor Order</p>
+              <div className="flex items-center gap-1.5 text-xs text-amber-700 font-semibold uppercase tracking-wide">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+                <span>Nomor Order</span>
+              </div>
               <p className="text-lg font-bold text-amber-900">{orderNumber}</p>
             </div>
 
             <div className="space-y-2">
-              <div className="flex justify-between">
-                <p className="text-xs text-amber-700 font-semibold">👤 Nama</p>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-1.5 text-xs text-amber-700 font-semibold">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                  <span>Nama</span>
+                </div>
                 <p className="text-sm font-semibold text-amber-900">{customerName}</p>
               </div>
-              <div className="flex justify-between">
-                <p className="text-xs text-amber-700 font-semibold">🪑 Meja</p>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-1.5 text-xs text-amber-700 font-semibold">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581a1.125 1.125 0 001.59 0l6.97-6.97a1.125 1.125 0 000-1.59l-9.581-9.58A2.25 2.25 0 009.569 3z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
+                  </svg>
+                  <span>Meja</span>
+                </div>
                 <p className="text-sm font-semibold text-amber-900">Meja {tableNumber}</p>
               </div>
-              <div className="flex justify-between pt-2 border-t border-amber-200">
-                <p className="text-xs text-amber-700 font-semibold">💰 Total</p>
+              <div className="flex justify-between items-center pt-2 border-t border-amber-200">
+                <div className="flex items-center gap-1.5 text-xs text-amber-700 font-semibold">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M4.5 19.5h15M12 6.75a3 3 0 110 6 3 3 0 010-6z" />
+                  </svg>
+                  <span>Total</span>
+                </div>
                 <p className="text-lg font-bold text-amber-900">Rp {totalPrice.toLocaleString("id-ID")}</p>
               </div>
             </div>
@@ -74,7 +95,12 @@ export default function OrderSuccessModal({ isOpen, orderNumber, customerName, t
 
           {/* Detail Pesanan */}
           <div>
-            <h3 className="text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">📦 Detail Pesanan</h3>
+            <h3 className="text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4 text-amber-900">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+              </svg>
+              <span>Detail Pesanan</span>
+            </h3>
 
             <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
               {cartItems.map((item) => (
@@ -100,7 +126,12 @@ export default function OrderSuccessModal({ isOpen, orderNumber, customerName, t
 
           {/* Info Box */}
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
-            <p className="text-xs text-blue-900 font-semibold mb-1">ℹ️ Catatan Penting:</p>
+            <div className="flex items-center gap-1.5 text-xs text-blue-900 font-semibold mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4 text-blue-900">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 111.083.985l-.379 1.161-.011.035m-.756-1.163l.756 1.163M12 2.25c4.717 0 8.522 3.805 8.522 8.522s-3.805 8.522-8.522 8.522a8.52 8.52 0 01-8.522-8.522c0-4.717 3.805-8.522 8.522-8.522z" />
+              </svg>
+              <span>Catatan Penting:</span>
+            </div>
             <p className="text-xs text-blue-800">Tunjukkan nomor order ini kepada kasir untuk memproses pesananmu</p>
           </div>
 
