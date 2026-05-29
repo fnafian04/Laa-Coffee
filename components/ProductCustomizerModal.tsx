@@ -19,6 +19,8 @@ export default function ProductCustomizerModal({
   const [quantity, setQuantity] = useState(1);
   const [temperature, setTemperature] = useState<"hot" | "cold">("cold");
   const [customNotes, setCustomNotes] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
 
   // Reset states when modal is opened for a different product
   useEffect(() => {
@@ -26,8 +28,60 @@ export default function ProductCustomizerModal({
       setQuantity(1);
       setTemperature("cold");
       setCustomNotes("");
+      setCurrentIndex(0);
+      setIsTransitionEnabled(true);
     }
   }, [isOpen, product]);
+
+  // Build images array safely
+  const images: string[] = [];
+  if (product) {
+    if (product.image_url && product.image_url !== "☕") {
+      images.push(product.image_url);
+    }
+    if (product.image_urls && Array.isArray(product.image_urls)) {
+      product.image_urls.forEach((url) => {
+        if (url && url !== "☕" && !images.includes(url)) {
+          images.push(url);
+        }
+      });
+    }
+  }
+
+  // Construct carouselImages with a clone of the first image at the end
+  const carouselImages = images.length > 1 ? [...images, images[0]] : images;
+
+  // Auto-slide every 1 second if there are multiple images
+  useEffect(() => {
+    if (isOpen && images.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prevIndex) => prevIndex + 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [isOpen, images.length]);
+
+  // Handle boundary reset when reaching the cloned image
+  useEffect(() => {
+    if (images.length > 1 && currentIndex === images.length) {
+      // After transition duration (500ms), instantly reset to index 0
+      const timer = setTimeout(() => {
+        setIsTransitionEnabled(false);
+        setCurrentIndex(0);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, images.length]);
+
+  // Re-enable transition in the next tick
+  useEffect(() => {
+    if (!isTransitionEnabled && currentIndex === 0) {
+      const timer = setTimeout(() => {
+        setIsTransitionEnabled(true);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, isTransitionEnabled]);
 
   if (!isOpen || !product) return null;
 
@@ -66,25 +120,112 @@ export default function ProductCustomizerModal({
     onClose();
   };
 
+  const handlePrev = () => {
+    if (!isTransitionEnabled) return;
+    if (currentIndex === 0) {
+      setIsTransitionEnabled(false);
+      setCurrentIndex(images.length);
+      setTimeout(() => {
+        setIsTransitionEnabled(true);
+        setCurrentIndex(images.length - 1);
+      }, 50);
+    } else {
+      setCurrentIndex((prev) => prev - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (!isTransitionEnabled) return;
+    if (currentIndex >= images.length) return;
+    setCurrentIndex((prev) => prev + 1);
+  };
+
+  const handleDotClick = (idx: number) => {
+    if (!isTransitionEnabled) return;
+    setCurrentIndex(idx);
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-200">
       {/* Modal Box */}
       <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col max-h-[90vh] border border-amber-100 animate-in fade-in zoom-in-95 duration-200">
         
-        {/* Product Image Panel */}
-        <div className="relative w-full h-48 bg-amber-50 flex-shrink-0">
-          {product.image_url === "☕" || !product.image_url ? (
+        {/* Product Image Panel (Carousel if multiple images) */}
+        <div className="relative w-full h-48 bg-amber-50 flex-shrink-0 group">
+          {images.length === 0 ? (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-amber-100 text-5xl">☕</div>
-          ) : (
+          ) : images.length === 1 ? (
             <img
-              src={product.image_url}
+              src={images[0]}
               alt={product.name}
               className="w-full h-full object-cover"
             />
+          ) : (
+            /* Carousel */
+            <div className="relative w-full h-full overflow-hidden">
+              <div 
+                className={`flex w-full h-full ${isTransitionEnabled ? "transition-transform duration-500 ease-out" : ""}`}
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              >
+                {carouselImages.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    alt={`${product.name} - ${idx + 1}`}
+                    className="w-full h-full object-cover flex-shrink-0"
+                  />
+                ))}
+              </div>
+              
+              {/* Navigation Arrows */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrev();
+                }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full w-8 h-8 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 font-bold"
+                aria-label="Gambar sebelumnya"
+              >
+                ❮
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNext();
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full w-8 h-8 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 font-bold"
+                aria-label="Gambar selanjutnya"
+              >
+                ❯
+              </button>
+
+              {/* Indicator Dots */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                {images.map((_, idx) => {
+                  const activeDotIndex = currentIndex % images.length;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDotClick(idx);
+                      }}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        activeDotIndex === idx ? "bg-white w-4" : "bg-white/50"
+                      }`}
+                      aria-label={`Lihat gambar ke-${idx + 1}`}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           )}
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-black/70 transition-all font-semibold active:scale-90"
+            className="absolute top-3 right-3 bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-black/70 transition-all font-semibold active:scale-90 z-20"
             aria-label="Tutup kustomisasi"
           >
             ✕

@@ -80,16 +80,31 @@ export default function MenuPage() {
         ];
 
         // Map products to match Product interface
-        const mappedProducts: Product[] = productsData.map((prod: any) => ({
-          id: prod.id,
-          name: prod.name,
-          description: prod.description,
-          price: prod.price,
-          image_url: prod.image_url,
-          is_available: prod.is_available,
-          category_id: prod.category_id,
-          category_name: prod.category?.name,
-        }));
+        const mappedProducts: Product[] = productsData.map((prod: any) => {
+          let urls: string[] = [];
+          if (prod.image_urls) {
+            try {
+              if (Array.isArray(prod.image_urls)) {
+                urls = prod.image_urls;
+              } else if (typeof prod.image_urls === "string") {
+                urls = JSON.parse(prod.image_urls);
+              }
+            } catch (e) {
+              console.error("Error parsing image_urls:", e);
+            }
+          }
+          return {
+            id: prod.id,
+            name: prod.name,
+            description: prod.description,
+            price: prod.price,
+            image_url: prod.image_url,
+            image_urls: urls,
+            is_available: prod.is_available,
+            category_id: prod.category_id,
+            category_name: prod.category?.name,
+          };
+        });
 
         setCategories(allCategories);
         setProducts(mappedProducts);

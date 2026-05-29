@@ -6,6 +6,7 @@ export interface Product {
   description: string;
   price: number;
   image_url: string;
+  image_urls?: string[];
   is_available: boolean;
   category_id?: string;
   category_name?: string;
