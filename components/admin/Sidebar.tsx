@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getOrdersByStatus } from "@/lib/database";
 
 export default function Sidebar() {
@@ -10,12 +10,84 @@ export default function Sidebar() {
   const [pendingCount, setPendingCount] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // States for real-time notifications
+  const [previousOrders, setPreviousOrders] = useState<any[]>([]);
+  const [activeNotification, setActiveNotification] = useState<{
+    id: string;
+    customerName: string;
+    tableNumber: number;
+    orderNumber: string;
+  } | null>(null);
+
+  const previousOrdersRef = useRef<any[]>([]);
+  const isFirstLoadRef = useRef(true);
+
+  // Keep refs in sync to avoid interval resets
+  useEffect(() => {
+    previousOrdersRef.current = previousOrders;
+  }, [previousOrders]);
+
+  // Audio alert chime using browser Web Audio API
+  const playBeep = () => {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const playTone = (freq: number, start: number, duration: number) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, start);
+        
+        gain.gain.setValueAtTime(0.15, start);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(start);
+        osc.stop(start + duration);
+      };
+      
+      const now = audioCtx.currentTime;
+      playTone(587.33, now, 0.15); // D5
+      playTone(880.00, now + 0.1, 0.3); // A5
+    } catch (e) {
+      console.error("Audio error:", e);
+    }
+  };
+
+  // Poll pending orders count and check for new orders
   useEffect(() => {
     const fetchPendingCount = async () => {
       try {
         const data = await getOrdersByStatus("pending_verification");
         if (data) {
           setPendingCount(data.length);
+
+          if (!isFirstLoadRef.current) {
+            // Find orders that were not in our previous list
+            const newOrders = data.filter(
+              (newOrder: any) => !previousOrdersRef.current.some((prevOrder) => prevOrder.id === newOrder.id)
+            );
+
+            if (newOrders.length > 0) {
+              const newest = newOrders[0];
+              setActiveNotification({
+                id: newest.id,
+                customerName: newest.customer_name,
+                tableNumber: newest.table_number,
+                orderNumber: newest.order_number,
+              });
+
+              // Play notification alert chime
+              playBeep();
+
+              // Broadcast custom event so active validation screens reload instantly
+              window.dispatchEvent(new CustomEvent("new-order-received", { detail: newest }));
+            }
+          } else {
+            isFirstLoadRef.current = false;
+          }
+
+          setPreviousOrders(data);
         }
       } catch (error) {
         console.error("Error fetching pending count for sidebar:", error);
@@ -26,6 +98,16 @@ export default function Sidebar() {
     const interval = setInterval(fetchPendingCount, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Auto-dismiss toast notification after 8 seconds
+  useEffect(() => {
+    if (activeNotification) {
+      const timer = setTimeout(() => {
+        setActiveNotification(null);
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [activeNotification]);
 
   const handleLogout = () => {
     localStorage.removeItem("laa_coffee_admin_auth");
@@ -130,6 +212,40 @@ export default function Sidebar() {
           Keluar
         </button>
       </aside>
+
+      {/* Floating Toast Notification Banner */}
+      {activeNotification && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-[90%] sm:max-w-md bg-amber-950/95 text-white p-4 rounded-2xl shadow-2xl border border-amber-800 backdrop-blur-md flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="text-2xl animate-bounce">🔔</span>
+            <div className="min-w-0">
+              <p className="font-black text-sm text-amber-200">Pesanan Baru Masuk!</p>
+              <p className="text-xs text-amber-100 mt-0.5 font-bold truncate">
+                {activeNotification.customerName} (Meja {activeNotification.tableNumber})
+              </p>
+              <p className="text-[10px] text-amber-400 font-semibold mt-0.5">
+                {activeNotification.orderNumber}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Link
+              href="/admin/payments/validation"
+              onClick={() => setActiveNotification(null)}
+              className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-colors shadow-md"
+            >
+              Lihat
+            </Link>
+            <button
+              onClick={() => setActiveNotification(null)}
+              className="text-gray-400 hover:text-white text-sm p-1"
+              title="Tutup"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

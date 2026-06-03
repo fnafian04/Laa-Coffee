@@ -21,6 +21,13 @@ export default function ProductCustomizerModal({
   const [customNotes, setCustomNotes] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
+
+  const handleImageClick = (img: string) => {
+    setLightboxImage(img);
+    setIsLightboxOpen(true);
+  };
 
   // Reset states when modal is opened for a different product
   useEffect(() => {
@@ -30,6 +37,8 @@ export default function ProductCustomizerModal({
       setCustomNotes("");
       setCurrentIndex(0);
       setIsTransitionEnabled(true);
+      setIsLightboxOpen(false);
+      setLightboxImage("");
     }
   }, [isOpen, product]);
 
@@ -144,6 +153,8 @@ export default function ProductCustomizerModal({
     product.name?.toLowerCase().includes("latte") ||
     product.name?.toLowerCase().includes("americano");
 
+  const adjustedPrice = isBeverage && temperature === "cold" ? product.price + 1000 : product.price;
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -204,22 +215,36 @@ export default function ProductCustomizerModal({
           {images.length === 0 ? (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-amber-100 text-5xl">☕</div>
           ) : images.length === 1 ? (
-            <img
-              src={images[0]}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
+            <>
+              <img
+                src={images[0]}
+                alt={product.name}
+                className="w-full h-full object-cover cursor-zoom-in"
+                onClick={() => handleImageClick(images[0])}
+              />
+              <div className="absolute top-3 left-3 bg-black/45 backdrop-blur-sm text-white text-[10px] font-medium px-2.5 py-1 rounded-lg flex items-center gap-1 select-none pointer-events-none z-20">
+                🔍 Ketuk untuk memperbesar
+              </div>
+            </>
           ) : (
             /* Carousel */
             <div 
-              className="relative w-full h-full overflow-hidden cursor-grab active:cursor-grabbing select-none"
+              className="relative w-full h-full overflow-hidden cursor-zoom-in select-none"
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
               onMouseDown={onMouseDown}
               onMouseUp={onMouseUp}
               onMouseLeave={onMouseLeave}
+              onClick={(e) => {
+                const target = e.target as HTMLElement;
+                if (target.closest('button')) return;
+                handleImageClick(images[currentIndex % images.length]);
+              }}
             >
+              <div className="absolute top-3 left-3 bg-black/45 backdrop-blur-sm text-white text-[10px] font-medium px-2.5 py-1 rounded-lg flex items-center gap-1 select-none pointer-events-none z-20">
+                🔍 Ketuk untuk memperbesar
+              </div>
               <div 
                 className={`flex w-full h-full ${isTransitionEnabled ? "transition-transform duration-500 ease-out" : ""}`}
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -299,7 +324,7 @@ export default function ProductCustomizerModal({
                 {product.name}
               </h2>
               <span className="text-lg font-bold text-amber-800 flex-shrink-0">
-                {formatPrice(product.price)}
+                {formatPrice(adjustedPrice)}
               </span>
             </div>
             <p className="text-sm text-gray-600">{product.description}</p>
@@ -394,12 +419,45 @@ export default function ProductCustomizerModal({
           >
             <span>📥 Tambah ke Keranjang</span>
             <span className="bg-amber-900/40 px-3 py-1 rounded-lg text-sm font-semibold">
-              {formatPrice(product.price * quantity)}
+              {formatPrice(adjustedPrice * quantity)}
             </span>
           </button>
         </div>
 
       </div>
+
+      {/* Lightbox Fullscreen Image Overlay */}
+      {isLightboxOpen && (
+        <div 
+          className="fixed inset-0 bg-black/95 z-[999] flex flex-col items-center justify-center p-4 animate-in fade-in duration-200 cursor-zoom-out"
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          {/* Close Button */}
+          <button
+            type="button"
+            onClick={() => setIsLightboxOpen(false)}
+            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all font-semibold active:scale-90 z-20 text-2xl"
+            aria-label="Tutup ukuran penuh"
+          >
+            ✕
+          </button>
+          
+          {/* Uncut full image */}
+          <div className="relative max-w-full max-h-[85vh] flex items-center justify-center">
+            <img
+              src={lightboxImage}
+              alt={product.name}
+              className="max-w-[95vw] max-h-[80vh] object-contain rounded-xl shadow-2xl border border-white/10"
+              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
+            />
+          </div>
+          
+          <div className="mt-4 text-center space-y-1">
+            <p className="text-white font-extrabold text-lg">{product.name}</p>
+            <p className="text-amber-200 text-xs font-semibold">Ketuk di mana saja untuk kembali</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

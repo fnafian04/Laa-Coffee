@@ -144,6 +144,7 @@ export default function MenuPage() {
       }
 
       const newItemId = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 9);
+      const finalPrice = temperature === "cold" ? product.price + 1000 : product.price;
 
       return [
         ...prev,
@@ -151,7 +152,7 @@ export default function MenuPage() {
           id: newItemId,
           product_id: product.id,
           product_name: product.name,
-          price: product.price,
+          price: finalPrice,
           image_url: product.image_url,
           quantity,
           temperature: temperature ? (temperature as "hot" | "cold") : undefined,
@@ -299,18 +300,18 @@ export default function MenuPage() {
               <h4 className="font-bold text-sm uppercase tracking-wider text-amber-400">Navigasi Cepat</h4>
               <ul className="text-xs text-amber-100/80 space-y-2.5">
                 <li>
-                  <Link href="/" className="hover:text-white transition-colors">
-                    → Beranda Utama
+                  <Link href="/" className="hover:text-amber-300 hover:translate-x-1 transition-all duration-200 inline-block">
+                    Beranda Utama
                   </Link>
                 </li>
                 <li>
-                  <Link href="/menu" className="hover:text-white transition-colors">
-                    → Pesan Menu Digital
+                  <Link href="/menu" className="hover:text-amber-300 hover:translate-x-1 transition-all duration-200 inline-block">
+                    Pesan Menu Digital
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about" className="hover:text-white transition-colors">
-                    → Info Kontak & Kafe
+                  <Link href="/about" className="hover:text-amber-300 hover:translate-x-1 transition-all duration-200 inline-block">
+                    Info Kontak & Kafe
                   </Link>
                 </li>
               </ul>

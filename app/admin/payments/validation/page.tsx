@@ -91,6 +91,20 @@ export default function PaymentValidationPage() {
 
   useEffect(() => {
     fetchPendingOrders();
+
+    const handleNewOrder = () => {
+      fetchPendingOrders();
+    };
+
+    window.addEventListener("new-order-received", handleNewOrder);
+    
+    // Add 5-second polling as a robust fallback
+    const interval = setInterval(fetchPendingOrders, 5000);
+
+    return () => {
+      window.removeEventListener("new-order-received", handleNewOrder);
+      clearInterval(interval);
+    };
   }, []);
 
   const fetchPendingOrders = async () => {

@@ -24,6 +24,7 @@ interface CartItem {
   price: number;
   image_url: string;
   quantity: number;
+  temperature?: "hot" | "cold";
 }
 
 export default function BuatPesananPage() {
@@ -66,38 +67,70 @@ export default function BuatPesananPage() {
 
   // Handle add to cart
   const handleAddToCart = (product: Product) => {
-    const existingItem = cartItems.find((item) => item.product_id === product.id);
+    const category = categories.find((c) => c.id === product.category_id);
+    const isBev = category?.name === "Minuman";
+    const defaultTemp = isBev ? "cold" : undefined;
+    const initialPrice = defaultTemp === "cold" ? product.price + 1000 : product.price;
+
+    const existingItem = cartItems.find(
+      (item) => item.product_id === product.id && item.temperature === defaultTemp
+    );
 
     if (existingItem) {
-      setCartItems(cartItems.map((item) => (item.product_id === product.id ? { ...item, quantity: item.quantity + 1 } : item)));
+      setCartItems(
+        cartItems.map((item) =>
+          item.product_id === product.id && item.temperature === defaultTemp
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
     } else {
+      const newItemId = Math.random().toString(36).substring(2, 9);
       setCartItems([
         ...cartItems,
         {
-          id: product.id,
+          id: newItemId,
           product_id: product.id,
           product_name: product.name,
-          price: product.price,
+          price: initialPrice,
           image_url: "☕",
           quantity: 1,
+          temperature: defaultTemp,
         },
       ]);
     }
   };
 
   // Handle remove from cart
-  const handleRemoveFromCart = (productId: string) => {
-    setCartItems(cartItems.filter((item) => item.product_id !== productId));
+  const handleRemoveFromCart = (cartItemId: string) => {
+    setCartItems(cartItems.filter((item) => item.id !== cartItemId));
   };
 
   // Handle quantity change
-  const handleQuantityChange = (productId: string, quantity: number) => {
+  const handleQuantityChange = (cartItemId: string, quantity: number) => {
     if (quantity <= 0) {
-      handleRemoveFromCart(productId);
+      handleRemoveFromCart(cartItemId);
       return;
     }
 
-    setCartItems(cartItems.map((item) => (item.product_id === productId ? { ...item, quantity } : item)));
+    setCartItems(cartItems.map((item) => (item.id === cartItemId ? { ...item, quantity } : item)));
+  };
+
+  // Handle temperature change
+  const handleTemperatureChange = (cartItemId: string, temp: "hot" | "cold") => {
+    setCartItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== cartItemId) return item;
+        const prod = products.find((p) => p.id === item.product_id);
+        if (!prod) return item;
+        const newPrice = temp === "cold" ? prod.price + 1000 : prod.price;
+        return {
+          ...item,
+          temperature: temp,
+          price: newPrice,
+        };
+      })
+    );
   };
 
   // Handle checkout
@@ -122,7 +155,13 @@ export default function BuatPesananPage() {
         phone_number: phoneNumber,
         payment_method: paymentMethod,
         total_price: totalPrice,
-        items: cartItems,
+        items: cartItems.map((item) => ({
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price: item.price,
+          temperature: item.temperature,
+          custom_notes: "",
+        })),
       });
 
       if (success) {
@@ -287,29 +326,72 @@ export default function BuatPesananPage() {
                 </div>
               ) : (
                 cartItems.map((item) => (
-                  <div key={item.product_id} className="bg-gray-50 rounded-lg p-3 border border-amber-100">
-                    <div className="flex justify-between items-start gap-2 mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-sm text-amber-900">{item.product_name}</h4>
-                        <p className="text-xs text-gray-600">Rp {item.price.toLocaleString("id-ID")}</p>
+                  <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-amber-100 space-y-2.5">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-sm text-amber-900 truncate">{item.product_name}</h4>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="text-xs text-gray-650 font-bold">Rp {item.price.toLocaleString("id-ID")}</span>
+                          {item.temperature && (
+                            <span className={`text-[9px] px-1 py-0.5 rounded font-black border ${
+                              item.temperature === "hot" ? "bg-red-50 text-red-650 border-red-150" : "bg-blue-50 text-blue-650 border-blue-150"
+                            }`}>
+                              {item.temperature === "hot" ? "PANAS" : "DINGIN"}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <button onClick={() => handleRemoveFromCart(item.product_id)} className="text-red-500 hover:text-red-700 text-sm">
+                      <button onClick={() => handleRemoveFromCart(item.id)} className="text-red-500 hover:text-red-700 text-sm p-0.5">
                         ✕
                       </button>
                     </div>
 
+                    {/* Temperature Selector Toggles for Beverages */}
+                    {(() => {
+                      const prod = products.find(p => p.id === item.product_id);
+                      const cat = categories.find(c => c.id === prod?.category_id);
+                      const isBev = cat?.name === "Minuman";
+                      
+                      return isBev ? (
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleTemperatureChange(item.id, "hot")}
+                            className={`flex-1 py-1 rounded-lg text-[10px] font-extrabold transition-all border ${
+                              item.temperature === "hot"
+                                ? "bg-red-50 text-red-750 border-red-300 shadow-sm"
+                                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                            }`}
+                          >
+                            🔥 Panas
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleTemperatureChange(item.id, "cold")}
+                            className={`flex-1 py-1 rounded-lg text-[10px] font-extrabold transition-all border ${
+                              item.temperature === "cold"
+                                ? "bg-blue-50 text-blue-750 border-blue-300 shadow-sm"
+                                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                            }`}
+                          >
+                            ❄️ Dingin
+                          </button>
+                        </div>
+                      ) : null;
+                    })()}
+
                     {/* Quantity Controls */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 border border-amber-200 rounded">
-                        <button onClick={() => handleQuantityChange(item.product_id, item.quantity - 1)} className="px-2 py-1 text-sm text-amber-900 hover:bg-amber-50">
+                    <div className="flex items-center justify-between pt-1 border-t border-amber-50">
+                      <div className="flex items-center gap-2 border border-amber-200 rounded bg-white">
+                        <button onClick={() => handleQuantityChange(item.id, item.quantity - 1)} className="px-2 py-0.5 text-sm text-amber-900 hover:bg-amber-50 font-bold">
                           −
                         </button>
-                        <span className="px-2 py-1 text-sm font-semibold text-amber-900 min-w-6 text-center">{item.quantity}</span>
-                        <button onClick={() => handleQuantityChange(item.product_id, item.quantity + 1)} className="px-2 py-1 text-sm text-amber-900 hover:bg-amber-50">
+                        <span className="px-2 py-0.5 text-sm font-semibold text-amber-900 min-w-6 text-center">{item.quantity}</span>
+                        <button onClick={() => handleQuantityChange(item.id, item.quantity + 1)} className="px-2 py-0.5 text-sm text-amber-900 hover:bg-amber-50 font-bold">
                           +
                         </button>
                       </div>
-                      <p className="text-sm font-semibold text-amber-900">Rp {(item.price * item.quantity).toLocaleString("id-ID")}</p>
+                      <p className="text-sm font-bold text-amber-950">Rp {(item.price * item.quantity).toLocaleString("id-ID")}</p>
                     </div>
                   </div>
                 ))
