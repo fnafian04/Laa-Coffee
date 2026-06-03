@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import OrderCard from "@/components/admin/OrderCard";
 import PaymentValidationModal from "@/components/admin/PaymentValidationModal";
-import { getOrdersByStatus, updatePaymentStatus, updateOrderStatus } from "@/lib/database";
+import { getOrdersByStatus, updatePaymentStatus, updateOrderStatus, updateOrderPaymentMethod } from "@/lib/database";
 
 interface OrderItem {
   name: string;
@@ -141,13 +141,22 @@ export default function PaymentValidationPage() {
     setIsModalOpen(true);
   };
 
-  const handleConfirmValidation = async () => {
+  const handleConfirmValidation = async (updatedPaymentMethod: string) => {
     if (!selectedOrder) return;
 
     setIsProcessing(true);
     try {
-      // Update payment status to paid and order status to confirmed
-      await Promise.all([updatePaymentStatus(selectedOrder.id, "paid"), updateOrderStatus(selectedOrder.id, "confirmed")]);
+      const promises = [
+        updatePaymentStatus(selectedOrder.id, "paid"),
+        updateOrderStatus(selectedOrder.id, "confirmed"),
+      ];
+
+      // If the payment method was updated by the cashier, save the change
+      if (updatedPaymentMethod && updatedPaymentMethod !== selectedOrder.paymentMethod) {
+        promises.push(updateOrderPaymentMethod(selectedOrder.id, updatedPaymentMethod));
+      }
+
+      await Promise.all(promises);
 
       // Remove order from list
       setOrders((prev) => prev.filter((order) => order.id !== selectedOrder.id));

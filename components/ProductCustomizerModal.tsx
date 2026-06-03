@@ -51,15 +51,64 @@ export default function ProductCustomizerModal({
   // Construct carouselImages with a clone of the first image at the end
   const carouselImages = images.length > 1 ? [...images, images[0]] : images;
 
-  // Auto-slide every 1 second if there are multiple images
+  // Swipe and Drag gesture states
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [dragStart, setDragStart] = useState<number | null>(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      handleNext();
+    } else if (isRightSwipe) {
+      handlePrev();
+    }
+  };
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    setDragStart(e.clientX);
+  };
+
+  const onMouseUp = (e: React.MouseEvent) => {
+    if (dragStart === null) return;
+    const distance = dragStart - e.clientX;
+    setDragStart(null);
+
+    if (distance > minSwipeDistance) {
+      handleNext();
+    } else if (distance < -minSwipeDistance) {
+      handlePrev();
+    }
+  };
+
+  const onMouseLeave = () => {
+    setDragStart(null);
+  };
+
+  // Auto-slide every 2 seconds if there are multiple images
   useEffect(() => {
     if (isOpen && images.length > 1) {
       const interval = setInterval(() => {
         setCurrentIndex((prevIndex) => prevIndex + 1);
-      }, 1000);
+      }, 2000);
       return () => clearInterval(interval);
     }
-  }, [isOpen, images.length]);
+  }, [isOpen, images.length, currentIndex]);
 
   // Handle boundary reset when reaching the cloned image
   useEffect(() => {
@@ -162,7 +211,15 @@ export default function ProductCustomizerModal({
             />
           ) : (
             /* Carousel */
-            <div className="relative w-full h-full overflow-hidden">
+            <div 
+              className="relative w-full h-full overflow-hidden cursor-grab active:cursor-grabbing select-none"
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+              onMouseDown={onMouseDown}
+              onMouseUp={onMouseUp}
+              onMouseLeave={onMouseLeave}
+            >
               <div 
                 className={`flex w-full h-full ${isTransitionEnabled ? "transition-transform duration-500 ease-out" : ""}`}
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -172,7 +229,8 @@ export default function ProductCustomizerModal({
                     key={idx}
                     src={img}
                     alt={`${product.name} - ${idx + 1}`}
-                    className="w-full h-full object-cover flex-shrink-0"
+                    className="w-full h-full object-cover flex-shrink-0 pointer-events-none"
+                    draggable={false}
                   />
                 ))}
               </div>

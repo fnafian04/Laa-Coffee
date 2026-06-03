@@ -63,6 +63,36 @@ function QrCodeIcon() {
 }
 
 export default function SettlementPage() {
+  const [rawOrders, setRawOrders] = useState<any[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<"daily" | "weekly" | "monthly" | "yearly" | "all">("daily");
+
+  // Sub-filter selection states
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
+
+  const [selectedWeek, setSelectedWeek] = useState<string>(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+    const yearStart = new Date(d.getFullYear(), 0, 1);
+    const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    return `${d.getFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+  });
+
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+  });
+
+  const [selectedYear, setSelectedYear] = useState<number>(() => new Date().getFullYear());
+
   const [report, setReport] = useState<DailyReport>({
     date: new Date().toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" }),
     totalOrders: 0,
@@ -80,6 +110,44 @@ export default function SettlementPage() {
   const [selectedStatus, setSelectedStatus] = useState<"all" | "paid" | "unpaid">("all");
   const [isLoading, setIsLoading] = useState(true);
 
+  const getWeekRangeLabel = (weekStr: string) => {
+    if (!weekStr) return "";
+    const parts = weekStr.split("-W");
+    if (parts.length !== 2) return weekStr;
+    const targetYear = parseInt(parts[0], 10);
+    const targetWeek = parseInt(parts[1], 10);
+
+    const simple = new Date(targetYear, 0, 4);
+    const dayOfWeek = simple.getDay() || 7;
+    const dayOffset = (targetWeek - 1) * 7 - (dayOfWeek - 1);
+    const startOfWeek = new Date(simple.getTime() + dayOffset * 24 * 60 * 60 * 1000);
+    const endOfWeek = new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000);
+
+    return `Minggu ${targetWeek} (${startOfWeek.toLocaleDateString("id-ID", { day: "numeric", month: "short" })} - ${endOfWeek.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })})`;
+  };
+
+  const getPeriodLabel = (period: "daily" | "weekly" | "monthly" | "yearly" | "all") => {
+    switch (period) {
+      case "daily": {
+        const d = new Date(selectedDate + "T00:00:00");
+        return d.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+      }
+      case "weekly":
+        return getWeekRangeLabel(selectedWeek);
+      case "monthly": {
+        const parts = selectedMonth.split("-");
+        if (parts.length !== 2) return selectedMonth;
+        const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
+        return d.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+      }
+      case "yearly":
+        return `Tahun ${selectedYear}`;
+      case "all":
+      default:
+        return "Semua Transaksi";
+    }
+  };
+
   useEffect(() => {
     fetchSettlementData();
   }, []);
@@ -88,62 +156,130 @@ export default function SettlementPage() {
     try {
       setIsLoading(true);
       const ordersData = await getAllOrders();
-
-      if (ordersData && ordersData.length > 0) {
-        // Filter orders
-        const paidOrders = ordersData.filter((o: any) => o.payment_status === "paid");
-        const unpaidOrders = ordersData.filter((o: any) => o.payment_status === "unpaid" || o.payment_status === "pending_verification");
-        const completedOrders = ordersData.filter((o: any) => o.status === "completed");
-
-        // Calculate revenues
-        const totalRevenue = paidOrders.reduce((sum: number, o: any) => sum + (Number(o.total_price) || 0), 0);
-        const pendingRevenue = unpaidOrders.reduce((sum: number, o: any) => sum + (Number(o.total_price) || 0), 0);
-
-        // Payment method breakdown for PAID orders only
-        const cashRevenue = paidOrders.filter((o: any) => o.payment_method?.toLowerCase() === "cash" || o.payment_method?.toLowerCase() === "tunai").reduce((sum: number, o: any) => sum + (Number(o.total_price) || 0), 0);
-
-        const qrisRevenue = paidOrders.filter((o: any) => o.payment_method?.toLowerCase() === "qris").reduce((sum: number, o: any) => sum + (Number(o.total_price) || 0), 0);
-
-        const transferRevenue = paidOrders.filter((o: any) => o.payment_method?.toLowerCase().includes("transfer") || o.payment_method?.toLowerCase().includes("bank")).reduce((sum: number, o: any) => sum + (Number(o.total_price) || 0), 0);
-
-        // Setoran cash is strictly in multiples of Rp 50.000 or Rp 100.000
-        const setoranCash = Math.floor(cashRevenue / 50000) * 50000;
-
-        setReport({
-          date: new Date().toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" }),
-          totalOrders: ordersData.length,
-          totalRevenue,
-          pendingRevenue,
-          paidOrdersCount: paidOrders.length,
-          unpaidOrdersCount: unpaidOrders.length,
-          completedOrdersCount: completedOrders.length,
-          cashRevenue,
-          qrisRevenue,
-          transferRevenue,
-          setoranCash,
-        });
-
-        setReportItems(
-          ordersData.map((order: any) => ({
-            id: order.id,
-            orderId: order.order_number,
-            customerName: order.customer_name,
-            amount: Number(order.total_price) || 0,
-            status: order.payment_status === "paid" ? "paid" : "unpaid",
-            completionStatus: order.status,
-            paymentMethod: order.payment_method || "Cash",
-            time: new Date(order.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
-            date: new Date(order.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "2-digit", year: "numeric" }),
-            tableNumber: order.table_number,
-          })),
-        );
-      }
+      setRawOrders(ordersData || []);
     } catch (error) {
       console.error("Error fetching settlement data:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (rawOrders.length === 0) {
+      setReport({
+        date: getPeriodLabel(selectedPeriod),
+        totalOrders: 0,
+        totalRevenue: 0,
+        pendingRevenue: 0,
+        paidOrdersCount: 0,
+        unpaidOrdersCount: 0,
+        completedOrdersCount: 0,
+        cashRevenue: 0,
+        qrisRevenue: 0,
+        transferRevenue: 0,
+        setoranCash: 0,
+      });
+      setReportItems([]);
+      return;
+    }
+
+    // Filter raw orders by selected period and sub-filter in memory
+    const filteredOrders = rawOrders.filter((order) => {
+      if (!order.created_at) return false;
+      const orderDate = new Date(order.created_at);
+
+      switch (selectedPeriod) {
+        case "daily": {
+          const year = orderDate.getFullYear();
+          const month = String(orderDate.getMonth() + 1).padStart(2, '0');
+          const day = String(orderDate.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}` === selectedDate;
+        }
+        case "weekly": {
+          if (!selectedWeek) return false;
+          const parts = selectedWeek.split("-W");
+          if (parts.length !== 2) return false;
+          const targetYear = parseInt(parts[0], 10);
+          const targetWeek = parseInt(parts[1], 10);
+
+          const d = new Date(orderDate.getTime());
+          d.setHours(0, 0, 0, 0);
+          d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+          const yearStart = new Date(d.getFullYear(), 0, 1);
+          const orderWeek = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+          const orderYear = d.getFullYear();
+
+          return orderYear === targetYear && orderWeek === targetWeek;
+        }
+        case "monthly": {
+          const year = orderDate.getFullYear();
+          const month = String(orderDate.getMonth() + 1).padStart(2, '0');
+          return `${year}-${month}` === selectedMonth;
+        }
+        case "yearly": {
+          return orderDate.getFullYear() === selectedYear;
+        }
+        case "all":
+        default:
+          return true;
+      }
+    });
+
+    // Filter orders
+    const paidOrders = filteredOrders.filter((o: any) => o.payment_status === "paid");
+    const unpaidOrders = filteredOrders.filter((o: any) => o.payment_status === "unpaid" || o.payment_status === "pending_verification");
+    const completedOrders = filteredOrders.filter((o: any) => o.status === "completed");
+
+    // Payment method breakdown for PAID orders only
+    const cashRevenue = paidOrders
+      .filter((o: any) => o.payment_method?.toLowerCase() === "cash" || o.payment_method?.toLowerCase() === "tunai")
+      .reduce((sum: number, o: any) => sum + (Number(o.total_price) || 0), 0);
+
+    const qrisRevenue = paidOrders
+      .filter((o: any) => o.payment_method?.toLowerCase() === "qris")
+      .reduce((sum: number, o: any) => sum + (Number(o.total_price) || 0), 0);
+
+    const transferRevenue = paidOrders
+      .filter((o: any) => o.payment_method?.toLowerCase().includes("transfer") || o.payment_method?.toLowerCase().includes("bank"))
+      .reduce((sum: number, o: any) => sum + (Number(o.total_price) || 0), 0);
+
+    // Setoran cash is strictly in multiples of Rp 50.000
+    const setoranCash = Math.floor(cashRevenue / 50000) * 50000;
+
+    // Total Omset is from QRIS and setoran cash only. Transfer and cash remainder are excluded.
+    const totalRevenue = qrisRevenue + setoranCash;
+
+    const pendingRevenue = unpaidOrders.reduce((sum: number, o: any) => sum + (Number(o.total_price) || 0), 0);
+
+    setReport({
+      date: getPeriodLabel(selectedPeriod),
+      totalOrders: filteredOrders.length,
+      totalRevenue,
+      pendingRevenue,
+      paidOrdersCount: paidOrders.length,
+      unpaidOrdersCount: unpaidOrders.length,
+      completedOrdersCount: completedOrders.length,
+      cashRevenue,
+      qrisRevenue,
+      transferRevenue,
+      setoranCash,
+    });
+
+    setReportItems(
+      filteredOrders.map((order: any) => ({
+        id: order.id,
+        orderId: order.order_number,
+        customerName: order.customer_name,
+        amount: Number(order.total_price) || 0,
+        status: order.payment_status === "paid" ? "paid" : "unpaid",
+        completionStatus: order.status,
+        paymentMethod: order.payment_method || "Cash",
+        time: new Date(order.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
+        date: new Date(order.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "2-digit", year: "numeric" }),
+        tableNumber: order.table_number,
+      }))
+    );
+  }, [rawOrders, selectedPeriod, selectedDate, selectedWeek, selectedMonth, selectedYear]);
 
   const filteredItems = selectedStatus === "all" ? reportItems : reportItems.filter((item) => item.status === selectedStatus);
 
@@ -157,8 +293,9 @@ export default function SettlementPage() {
   };
 
   const getPercentage = (value: number) => {
-    if (report.totalRevenue === 0) return "0%";
-    return `${Math.round((value / report.totalRevenue) * 100)}%`;
+    const totalPaid = report.cashRevenue + report.qrisRevenue + report.transferRevenue;
+    if (totalPaid === 0) return "0%";
+    return `${Math.round((value / totalPaid) * 100)}%`;
   };
 
   return (
@@ -334,11 +471,11 @@ export default function SettlementPage() {
         <div className="flex-1 min-w-0">
           <div className="print-header hidden">
             <h1 className="text-3xl font-black tracking-wider text-black">LAA COFFEE</h1>
-            <p className="text-sm font-semibold tracking-wide uppercase">Laporan Keuangan & Settlement Harian</p>
+            <p className="text-sm font-semibold tracking-wide uppercase">Laporan Keuangan & Settlement ({report.date})</p>
             <p className="text-xs text-gray-500 mt-1">Tanggal Cetak: {new Date().toLocaleString("id-ID")}</p>
           </div>
           <h1 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-amber-900 leading-tight print-hide break-words">Settlement Keuangan</h1>
-          <p className="text-xs md:text-sm text-amber-700 mt-1 print-hide">Ringkasan pendapatan harian & setoran kasir</p>
+          <p className="text-xs md:text-sm text-amber-700 mt-1 print-hide">Periode Laporan: <span className="font-extrabold text-amber-900">{report.date}</span></p>
         </div>
         <div className="flex items-center gap-2 md:gap-3 print-hide flex-col sm:flex-row w-full md:w-auto">
           <button
@@ -356,6 +493,123 @@ export default function SettlementPage() {
           </button>
         </div>
       </div>
+
+      {/* Period Filter Buttons - Print Hide */}
+      <div className="flex flex-wrap gap-2 print-hide bg-amber-50 p-2 rounded-2xl border border-amber-200/60 shadow-sm mb-4">
+        <button
+          onClick={() => setSelectedPeriod("daily")}
+          className={`flex-1 min-w-[80px] sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 ${
+            selectedPeriod === "daily"
+              ? "bg-amber-800 text-white shadow-md shadow-amber-900/10 scale-[1.02]"
+              : "bg-white text-amber-900 hover:bg-amber-100/50 border border-amber-100"
+          }`}
+        >
+          <span>📅</span> Harian
+        </button>
+        <button
+          onClick={() => setSelectedPeriod("weekly")}
+          className={`flex-1 min-w-[80px] sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 ${
+            selectedPeriod === "weekly"
+              ? "bg-amber-800 text-white shadow-md shadow-amber-900/10 scale-[1.02]"
+              : "bg-white text-amber-900 hover:bg-amber-100/50 border border-amber-100"
+          }`}
+        >
+          <span>📊</span> Mingguan
+        </button>
+        <button
+          onClick={() => setSelectedPeriod("monthly")}
+          className={`flex-1 min-w-[80px] sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 ${
+            selectedPeriod === "monthly"
+              ? "bg-amber-800 text-white shadow-md shadow-amber-900/10 scale-[1.02]"
+              : "bg-white text-amber-900 hover:bg-amber-100/50 border border-amber-100"
+          }`}
+        >
+          <span>🗓️</span> Bulanan
+        </button>
+        <button
+          onClick={() => setSelectedPeriod("yearly")}
+          className={`flex-1 min-w-[80px] sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 ${
+            selectedPeriod === "yearly"
+              ? "bg-amber-800 text-white shadow-md shadow-amber-900/10 scale-[1.02]"
+              : "bg-white text-amber-900 hover:bg-amber-100/50 border border-amber-100"
+          }`}
+        >
+          <span>🏆</span> Tahunan
+        </button>
+        <button
+          onClick={() => setSelectedPeriod("all")}
+          className={`flex-1 min-w-[80px] sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 ${
+            selectedPeriod === "all"
+              ? "bg-amber-800 text-white shadow-md shadow-amber-900/10 scale-[1.02]"
+              : "bg-white text-amber-900 hover:bg-amber-100/50 border border-amber-100"
+          }`}
+        >
+          <span>🌍</span> Semua
+        </button>
+      </div>
+
+      {/* Sub-Filters: Date, Week, Month, Year Pickers (Print Hide) */}
+      {selectedPeriod !== "all" && (
+        <div className="print-hide bg-white p-5 rounded-2xl border-2 border-amber-200/80 shadow-sm mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex-1 w-full">
+            <label className="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">
+              {selectedPeriod === "daily" && "Pilih Tanggal:"}
+              {selectedPeriod === "weekly" && "Pilih Minggu:"}
+              {selectedPeriod === "monthly" && "Pilih Bulan & Tahun:"}
+              {selectedPeriod === "yearly" && "Pilih Tahun:"}
+            </label>
+            
+            {selectedPeriod === "daily" && (
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full sm:max-w-xs px-4 py-2.5 border-2 border-amber-200 rounded-xl focus:outline-none focus:border-amber-600 text-amber-900 font-bold bg-white cursor-pointer"
+              />
+            )}
+
+            {selectedPeriod === "weekly" && (
+              <input
+                type="week"
+                value={selectedWeek}
+                onChange={(e) => setSelectedWeek(e.target.value)}
+                className="w-full sm:max-w-xs px-4 py-2.5 border-2 border-amber-200 rounded-xl focus:outline-none focus:border-amber-600 text-amber-900 font-bold bg-white cursor-pointer"
+              />
+            )}
+
+            {selectedPeriod === "monthly" && (
+              <input
+                type="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="w-full sm:max-w-xs px-4 py-2.5 border-2 border-amber-200 rounded-xl focus:outline-none focus:border-amber-600 text-amber-900 font-bold bg-white cursor-pointer"
+              />
+            )}
+
+            {selectedPeriod === "yearly" && (
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="w-full sm:max-w-xs px-4 py-2.5 border-2 border-amber-200 rounded-xl focus:outline-none focus:border-amber-600 text-amber-900 font-bold bg-white cursor-pointer"
+              >
+                {Array.from({ length: 11 }, (_, i) => new Date().getFullYear() - 5 + i).map((yr) => (
+                  <option key={yr} value={yr}>
+                    Tahun {yr}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+          
+          <div className="text-xs text-amber-850 bg-amber-50 border border-amber-100 rounded-xl p-4 max-w-sm w-full sm:w-auto mt-2 sm:mt-0 flex items-center gap-2 flex-shrink-0">
+            <span>ℹ️</span>
+            <div>
+              <p className="font-bold">Periode Aktif:</p>
+              <p className="font-semibold text-amber-950 mt-0.5">{report.date}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Guidance Note */}
       <div className="bg-blue-50 border-l-4 border-blue-500 p-5 rounded-r-xl text-sm text-blue-900 leading-relaxed instruction-note print-hide">

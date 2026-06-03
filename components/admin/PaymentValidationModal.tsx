@@ -1,17 +1,36 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 interface PaymentValidationModalProps {
   isOpen: boolean;
   orderId: string;
   customerName: string;
   paymentMethod: string;
   totalAmount: number;
-  onConfirm: () => void;
+  onConfirm: (updatedPaymentMethod: string) => void;
   onCancel: () => void;
   isLoading?: boolean;
 }
 
-export default function PaymentValidationModal({ isOpen, orderId, customerName, paymentMethod, totalAmount, onConfirm, onCancel, isLoading = false }: PaymentValidationModalProps) {
+export default function PaymentValidationModal({ 
+  isOpen, 
+  orderId, 
+  customerName, 
+  paymentMethod, 
+  totalAmount, 
+  onConfirm, 
+  onCancel, 
+  isLoading = false 
+}: PaymentValidationModalProps) {
+  const [localPaymentMethod, setLocalPaymentMethod] = useState(paymentMethod);
+
+  useEffect(() => {
+    if (isOpen) {
+      setLocalPaymentMethod(paymentMethod);
+    }
+  }, [isOpen, paymentMethod]);
+
   if (!isOpen) return null;
 
   return (
@@ -27,37 +46,23 @@ export default function PaymentValidationModal({ isOpen, orderId, customerName, 
           </p>
 
           <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4 space-y-2">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <span className="text-sm text-amber-700">Atas Nama:</span>
               <span className="font-bold text-amber-900">{customerName}</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-amber-700">Metode Pembayaran:</span>
-              <span className="font-bold text-amber-900 flex items-center gap-1">
-                {paymentMethod?.toLowerCase() === "qris" ? (
-                  <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-950 px-2 py-0.5 rounded border border-amber-300 text-xs">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-amber-900">
-                      <rect width="5" height="5" x="3" y="3" rx="1"/>
-                      <rect width="5" height="5" x="16" y="3" rx="1"/>
-                      <rect width="5" height="5" x="3" y="16" rx="1"/>
-                      <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
-                      <path d="M21 21v.01"/>
-                      <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
-                      <path d="M3 12h.01"/>
-                      <path d="M12 3h.01"/>
-                      <path d="M12 16v.01"/>
-                      <path d="M16 12h1"/>
-                      <path d="M21 12v.01"/>
-                      <path d="M12 21v-1"/>
-                    </svg>
-                    <span>QRIS</span>
-                  </span>
-                ) : paymentMethod?.toLowerCase() === "cash" || paymentMethod?.toLowerCase() === "tunai" ? (
-                  <span>💵 Cash</span>
-                ) : (
-                  <span>🏦 Transfer</span>
-                )}
-              </span>
+            
+            <div className="border-t border-amber-200/60 pt-2 flex flex-col gap-1.5">
+              <label htmlFor="modal-payment-method" className="text-sm text-amber-700 font-semibold">Metode Pembayaran:</label>
+              <select
+                id="modal-payment-method"
+                value={localPaymentMethod}
+                onChange={(e) => setLocalPaymentMethod(e.target.value)}
+                className="w-full px-3 py-2 border-2 border-amber-200 rounded-lg text-amber-900 bg-white font-bold focus:outline-none focus:border-amber-600 transition-colors cursor-pointer text-sm"
+              >
+                <option value="Cash">💵 Cash</option>
+                <option value="QRIS">🔳 QRIS</option>
+                <option value="Transfer">🏦 Transfer</option>
+              </select>
             </div>
             <div className="border-t border-amber-200 pt-2 flex justify-between">
               <span className="text-sm font-semibold text-amber-700">Total:</span>
@@ -76,7 +81,7 @@ export default function PaymentValidationModal({ isOpen, orderId, customerName, 
             Batal
           </button>
           <button
-            onClick={onConfirm}
+            onClick={() => onConfirm(localPaymentMethod)}
             disabled={isLoading}
             className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-400 text-white font-semibold rounded-lg transition-all disabled:opacity-50"
           >

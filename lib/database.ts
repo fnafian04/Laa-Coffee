@@ -275,6 +275,19 @@ export async function updatePaymentStatus(id: string, payment_status: "unpaid" |
   }
 }
 
+export async function updateOrderPaymentMethod(id: string, payment_method: string) {
+  try {
+    const { data, error } = await supabase.from("orders").update({ payment_method }).eq("id", id).select();
+
+    if (error) throw error;
+    return data?.[0] || null;
+  } catch (error) {
+    console.error("Error updating payment method:", error);
+    return null;
+  }
+}
+
+
 export async function getOrdersByTable(tableNumber: number) {
   try {
     const { data, error } = await supabase.from("orders").select("*, order_items(*)").eq("table_number", tableNumber).in("status", ["pending", "confirmed"]).order("created_at", { ascending: false });
