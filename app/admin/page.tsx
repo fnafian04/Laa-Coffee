@@ -173,7 +173,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4 border-b border-amber-200 pb-4 md:pb-5">
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-amber-900 tracking-tight break-words">Haloo mama dan bapak 😁</h1>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-amber-900 tracking-tight break-words">Haloo Admin 😁</h1>
           <p className="text-xs md:text-sm text-amber-700 mt-1">Kelola penjualan & pantau real-time</p>
           <p className="text-[10px] md:text-xs font-semibold text-amber-600/80 mt-2 bg-amber-100/50 inline-block px-3 py-1 rounded-lg border border-amber-200 min-h-[28px]">{currentDateTime || "Memuat waktu..."}</p>
         </div>
