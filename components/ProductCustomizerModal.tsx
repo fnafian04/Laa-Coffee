@@ -215,17 +215,12 @@ export default function ProductCustomizerModal({
           {images.length === 0 ? (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-amber-100 text-5xl">☕</div>
           ) : images.length === 1 ? (
-            <>
-              <img
-                src={images[0]}
-                alt={product.name}
-                className="w-full h-full object-cover cursor-zoom-in"
-                onClick={() => handleImageClick(images[0])}
-              />
-              <div className="absolute top-3 left-3 bg-black/45 backdrop-blur-sm text-white text-[10px] font-medium px-2.5 py-1 rounded-lg flex items-center gap-1 select-none pointer-events-none z-20">
-                🔍 Ketuk untuk memperbesar
-              </div>
-            </>
+            <img
+              src={images[0]}
+              alt={product.name}
+              className="w-full h-full object-cover cursor-zoom-in"
+              onClick={() => handleImageClick(images[0])}
+            />
           ) : (
             /* Carousel */
             <div 
@@ -242,9 +237,6 @@ export default function ProductCustomizerModal({
                 handleImageClick(images[currentIndex % images.length]);
               }}
             >
-              <div className="absolute top-3 left-3 bg-black/45 backdrop-blur-sm text-white text-[10px] font-medium px-2.5 py-1 rounded-lg flex items-center gap-1 select-none pointer-events-none z-20">
-                🔍 Ketuk untuk memperbesar
-              </div>
               <div 
                 className={`flex w-full h-full ${isTransitionEnabled ? "transition-transform duration-500 ease-out" : ""}`}
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
